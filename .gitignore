@@ -12,8 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
-.idea
-/jar
 local.properties
 /app/proguardMapping.txt 
 /LTDecodeSpace
