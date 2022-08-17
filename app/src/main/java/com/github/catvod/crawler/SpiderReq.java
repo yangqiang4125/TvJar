@@ -20,12 +20,12 @@ public class SpiderReq {
     private static final String defaultTag = "sp_req_default";
 
     private static OkHttpClient defaultClient = initDefaultClient();
-
+    private static final int DEFAULT_TIMEOUT = 35;
     private static OkHttpClient initDefaultClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.readTimeout(15, TimeUnit.SECONDS);
-        builder.writeTimeout(15, TimeUnit.SECONDS);
-        builder.connectTimeout(15, TimeUnit.SECONDS);
+        builder.readTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+        builder.writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+        builder.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
         builder.retryOnConnectionFailure(true);
         return builder.build();
     }

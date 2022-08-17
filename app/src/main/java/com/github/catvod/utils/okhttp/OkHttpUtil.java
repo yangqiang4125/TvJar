@@ -16,7 +16,7 @@ public class OkHttpUtil {
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
 
-    private static final int DEFAULT_TIMEOUT = 15;
+    private static final int DEFAULT_TIMEOUT = 35;
 
     private static final Object lockO = new Object();
 
