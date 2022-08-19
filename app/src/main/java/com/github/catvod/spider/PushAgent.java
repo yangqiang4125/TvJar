@@ -452,16 +452,19 @@ public class PushAgent extends Spider {
             Pattern pattern2 = AliPLink;
             Matcher matcher2 = pattern2.matcher(url);
             Matcher matcher = pattern.matcher(url);
+            List<String> vodItems = new ArrayList<>();
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
+                String typeName = "官源";
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, null));
                 String VodName = doc.select("head > title").text();
                 JSONObject result = new JSONObject();
                 JSONArray lists = new JSONArray();
                 JSONObject vodAtom = new JSONObject();
+                if(url.contains("iqiyi")) typeName = "爱奇艺";
                 vodAtom.put("vod_id", url);
                 vodAtom.put("vod_name", VodName);
                 vodAtom.put("vod_pic", "https://img.zcool.cn/community/0123545c74c5aea801213f261297df.png");
-                vodAtom.put("type_name", "官源");
+                vodAtom.put("type_name", typeName);
                 vodAtom.put("vod_year", "");
                 vodAtom.put("vod_area", "");
                 vodAtom.put("vod_remarks", "");
@@ -474,7 +477,6 @@ public class PushAgent extends Spider {
                 result.put("list", lists);
                 return result.toString();
             } else if (Misc.isVip(url) && url.contains("qq.com")) {
-                List<String> vodItems = new ArrayList<>();
                 JSONObject result = new JSONObject();
                 JSONArray lists = new JSONArray();
                 JSONObject vodAtom = new JSONObject();
@@ -484,11 +486,14 @@ public class PushAgent extends Spider {
                 if (!playListA.isEmpty()) {
                     for (int j = 0; j < playListA.size(); j++) {
                         Element vod = playListA.get(j);
-                        String a = vod.select("div").attr("data-vid");
-                        String b = vod.select("div").attr("data-cid");
-                        String id = "https://v.qq.com/x/cover/" + b + "/" + a;
-                        String name = vod.select("div span").text();
-                        vodItems.add(name + "$" + id);
+                        String img = vod.select("img").attr("src");
+                        if(img.equals("")||!img.contains("trailerlite")){
+                            String a = vod.select("div").attr("data-vid");
+                            String b = vod.select("div").attr("data-cid");
+                            String id = "https://v.qq.com/x/cover/" + b + "/" + a + ".html";
+                            String name = vod.select("div span").text();
+                            vodItems.add(name + "$" + id);
+                        }
                     }
                     String playList = TextUtils.join("#", vodItems);
                     vodAtom.put("vod_play_url", playList);
@@ -510,7 +515,6 @@ public class PushAgent extends Spider {
                 result.put("list", lists);
                 return result.toString();
             } else if (Misc.isVip(url) && url.contains("mgtv.com")) {
-                List<String> vodItems = new ArrayList<>();
                 JSONObject result = new JSONObject();
                 JSONArray lists = new JSONArray();
                 JSONObject vodAtom = new JSONObject();
@@ -525,7 +529,9 @@ public class PushAgent extends Spider {
                     if (a.length() > 0) {
                         for (int i = 0; i < a.length(); i++) {
                             JSONObject jObj = a.getJSONObject(i);
-                            if (jObj.getString("isIntact").equals("1")) {
+                            String isnew = jObj.getString("isnew");
+                            String isvip = jObj.getString("isvip");
+                            if (!(isnew.equals("2")&&isvip.equals("0"))) {
                                 String VodName = jObj.getString("t4");
                                 String id = jObj.getString("video_id");
                                 String VodId = "https://www.mgtv.com/b/" + mgtv1.group(1) + "/" + id + ".html";
