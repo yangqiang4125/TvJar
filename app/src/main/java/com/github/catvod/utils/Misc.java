@@ -13,9 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
 
 public class Misc {
-    public static final String MoAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
+    public static final String UaWinChrome = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
     public static final String DeAgent = "Dalvik/2.1.0 (Linux; U; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + " Build/" + Build.ID + ")";
-    public static final String UaWinChrome = "Mozilla/5.0 (Linux; Android 11; Ghxi Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/76.0.3809.89 Mobile Safari/537.36 T7/12.16 SearchCraft/3.9.1 (Baidu; P1 11)";
+    public static final String MoAgent = "Mozilla/5.0 (Linux; Android 11; Ghxi Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/76.0.3809.89 Mobile Safari/537.36 T7/12.16 SearchCraft/3.9.1 (Baidu; P1 11)";
 
     public static boolean isVip(String url) {
         // 适配2.0.6的调用应用内解析列表的支持, 需要配合直连分析一起使用，参考cjt影视和极品直连
@@ -43,9 +43,12 @@ public class Misc {
         return false;
     }
 
-    public HashMap<String, String> Headers() {
+    public static HashMap<String, String> Headers(int type) {
         HashMap<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", MoAgent);
+        if(type==0){
+            headers.put("User-Agent", UaWinChrome);
+        }else  headers.put("User-Agent", MoAgent);
+
         headers.put("Connection", " Keep-Alive");
         return headers;
     }
