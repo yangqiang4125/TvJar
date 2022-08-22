@@ -244,7 +244,10 @@ public class XBiubiu extends Spider {
             if (!getRuleVal("juqingqian").isEmpty() && !getRuleVal("juqinghou").isEmpty()) {
                 try {
                     desc = subContent(html, getRuleVal("juqingqian"), getRuleVal("juqinghou")).get(0);
-                    if(desc!=null)desc = desc.replaceAll(".*>(.*)", "$1");
+                    if(desc!=null){
+                        desc = desc.replace("\t", "");
+                        desc = desc.replaceAll("\\.*>(.*)", "$1");
+                    }
                 } catch (Exception e) {
                     SpiderDebug.log(e);
                 }

@@ -448,6 +448,9 @@ public class PushAgent extends Spider {
     public String detailContent(List<String> list) {
         try {
             String url = list.get(0);
+            if (url.contains("aliyundrive")&&url.contains("\n")) {
+                url = url.replace("\n","").replaceAll(".*(https://www.aliyundrive.com/s/\\w+).*", "$1");
+            }
             Pattern pattern = Folder;
             Pattern pattern2 = AliPLink;
             Matcher matcher2 = pattern2.matcher(url);
