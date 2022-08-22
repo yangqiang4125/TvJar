@@ -378,7 +378,8 @@ public class PushAgentQQ extends Spider {
     public String getAliContent(List<String> list) {
         String str;
         try {
-            String url = list.get(0).trim();
+            String[] idInfo = list.get(0).split("\\$\\$\\$");
+            String url = idInfo[0].trim();
             Pattern pattern = Folder;
             Matcher matcher = pattern.matcher(url);
             if (!matcher.find()) {
@@ -574,7 +575,7 @@ public class PushAgentQQ extends Spider {
             String[] idInfo = list.get(0).split("\\$\\$\\$");
             String url = idInfo[0].trim();
             String pic = null;
-            if (idInfo.length > 1) {
+            if (!idInfo[1].equals("")) {
                 pic = idInfo[1].trim();
             }
             Pattern pattern = Folder;
