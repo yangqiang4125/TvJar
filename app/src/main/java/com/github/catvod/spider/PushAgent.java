@@ -448,9 +448,7 @@ public class PushAgent extends Spider {
     public String detailContent(List<String> list) {
         try {
             String url = list.get(0);
-            if (url.contains("aliyundrive")&&url.contains("\n")) {
-                url = url.replace("\n","").replaceAll(".*(https://www.aliyundrive.com/s/\\w+).*", "$1");
-            }
+            url = url.replace("\n","").replaceAll(".*(https://www.aliyundrive.com/s/\\w+).*", "$1");
             Pattern pattern = Folder;
             Pattern pattern2 = AliPLink;
             Matcher matcher2 = pattern2.matcher(url);
@@ -483,6 +481,11 @@ public class PushAgent extends Spider {
                 JSONObject result = new JSONObject();
                 JSONArray lists = new JSONArray();
                 JSONObject vodAtom = new JSONObject();
+                if (url.contains("m.v.")) {
+                    String cid = url.replaceAll("https://m.v.qq.com/x/m/play\\?cid=(\\w+)&.*", "$1");
+                    String vid = url.replaceAll("https://m.v.qq.com/x/m/play\\?cid=\\w+&vid=(\\w+)", "$1");
+                    url = "https://v.qq.com/x/cover/" + cid + "/" + vid + ".html";
+                }
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, sHeaders()));
                 String VodName = doc.select("head > title").text();
                 Elements playListA = doc.select("div.episode-list-rect__item");
