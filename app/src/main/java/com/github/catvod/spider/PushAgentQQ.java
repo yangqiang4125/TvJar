@@ -11,7 +11,6 @@ import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -63,7 +62,6 @@ public class PushAgentQQ extends Spider {
                 ext = extend;
             }
         }
-        fetchRule(true);
     }
 
     protected void fetchRule(boolean flag) {
@@ -72,7 +70,7 @@ public class PushAgentQQ extends Spider {
                 String json = OkHttpUtil.string(ext+"?t="+Time(), null);
                 rule = new JSONObject(json);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
         }
     }
     private String getRuleVal(JSONObject o,String key, String defaultVal) {
