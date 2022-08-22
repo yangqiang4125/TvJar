@@ -34,7 +34,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class PushAgentQQ extends Spider {
+public class PushAgentqq extends Spider {
 
     private static String j = "";
     private static long StopRefresh;
