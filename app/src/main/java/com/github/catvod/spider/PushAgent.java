@@ -629,6 +629,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("jx", "1");
                     result.put("url", id);
+                    result.put("header", Misc.Headers(1));
                     return result.toString();
                 }
                 case "player": {
@@ -636,6 +637,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 0);
                     result.put("playUrl", "");
                     result.put("url", id);
+                    result.put("header", Misc.Headers(1));
                     return result.toString();
                 }
                 case "嗅探": {
@@ -643,6 +645,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("playUrl", "");
                     result.put("url", id);
+                    result.put("header", Misc.Headers(1));
                     return result.toString();
                 }
                 case "AliYun":

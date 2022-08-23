@@ -296,6 +296,7 @@ public class XBiubiu extends Spider {
             result.put("parse", 1);
             result.put("playUrl", "");
             result.put("url", webUrl);
+            result.put("header", Misc.Headers(1));
             return result.toString();
         } catch (Exception e) {
             SpiderDebug.log(e);
