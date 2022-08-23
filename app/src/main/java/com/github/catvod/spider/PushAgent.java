@@ -51,13 +51,11 @@ public class PushAgent extends Spider {
     public void init(Context context, String extend) {
         super.init(context, extend);
         if (extend != null) {
-            String[] arr = extend.split(";");
-            if (arr.length > 1) {
-                this.Token = arr[0];
-            }else Token = extend;
-           /* if (extend.startsWith("http")) {
+            if (extend.startsWith("http")) {
                 Token = OkHttpUtil.string(extend, null);
-            } */
+            } else {
+                Token = extend;
+            }
         }
     }
 
@@ -647,7 +645,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("jx", "1");
                     result.put("url", id);
-                    result.put("header", Misc.Headers(1));
+                    result.put("header", Misc.Headers(1,id));
                     return result.toString();
                 }
                 case "player": {
@@ -655,7 +653,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 0);
                     result.put("playUrl", "");
                     result.put("url", id);
-                    result.put("header", Misc.Headers(1));
+                    result.put("header", Misc.Headers(1,id));
                     return result.toString();
                 }
                 case "嗅探": {
@@ -663,7 +661,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("playUrl", "");
                     result.put("url", id);
-                    result.put("header", Misc.Headers(1));
+                    result.put("header", Misc.Headers(1,id));
                     return result.toString();
                 }
                 case "AliYun":

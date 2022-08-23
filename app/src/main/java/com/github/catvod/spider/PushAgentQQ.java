@@ -20,16 +20,18 @@ public class PushAgentQQ extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        pushAgent = new PushAgent();
-        pushAgent.init(context, extend);
+        String token = null;
         if (extend != null) {
             if (!extend.startsWith("http")) {
                 String[] arr = extend.split(";");
+                token = arr[0];
                 this.ext = arr[1];
             }else {
                 this.ext = extend;
             }
         }
+        pushAgent = new PushAgent();
+        pushAgent.init(context, token);
     }
 
     protected void fetchRule(boolean flag) {
