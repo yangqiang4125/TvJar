@@ -3,6 +3,7 @@ package com.github.catvod.spider;
 import android.content.Context;
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -124,7 +125,7 @@ public class PushAgentQQ extends Spider {
                 v.put("vod_id", url + "$$$" + pic + "$$$" + name);
                 v.put("vod_name", name);
                 v.put("vod_pic", pic);
-                v.put("vod_remarks", "");
+                v.put("vod_remarks", Misc.getWebName(url));
                 videos.put(v);
             }
 

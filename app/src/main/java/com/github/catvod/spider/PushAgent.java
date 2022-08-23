@@ -50,13 +50,14 @@ public class PushAgent extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        if (extend.startsWith("http")) {
-            Token = OkHttpUtil.string(extend, null);
-        } else {
+        if (extend != null) {
             String[] arr = extend.split(";");
             if (arr.length > 1) {
                 this.Token = arr[0];
             }else Token = extend;
+           /* if (extend.startsWith("http")) {
+                Token = OkHttpUtil.string(extend, null);
+            } */
         }
     }
 
@@ -353,7 +354,7 @@ public class PushAgent extends Spider {
         try {
             String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
-            if (idInfo.length > 1)  url = idInfo[0].trim();
+            if (idInfo.length > 0)  url = idInfo[0].trim();
             Pattern pattern = Folder;
             Matcher matcher = pattern.matcher(url);
             if (!matcher.find()) {
@@ -455,9 +456,9 @@ public class PushAgent extends Spider {
         try {
             String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
-            if (idInfo.length > 1)  url = idInfo[0].trim();
+            if (idInfo.length > 0)  url = idInfo[0].trim();
             String pic = null;
-            if (!idInfo[1].equals("")) {
+            if (idInfo.length>1&&!idInfo[1].equals("")) {
                 pic = idInfo[1].trim();
             }
             Pattern pattern = Folder;

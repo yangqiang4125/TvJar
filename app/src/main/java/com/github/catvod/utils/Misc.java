@@ -43,14 +43,43 @@ public class Misc {
         return false;
     }
 
-    public static HashMap<String, String> Headers(int type) {
+    public static HashMap<String, String> Headers(int type,String url) {
         HashMap<String, String> headers = new HashMap<>();
         if(type==0){
             headers.put("User-Agent", UaWinChrome);
         }else  headers.put("User-Agent", MoAgent);
 
         headers.put("Connection", " Keep-Alive");
+        if (url != null) {
+            headers.put("Referer", url);
+        }
         return headers;
+    }
+    public static HashMap<String, String> Headers(int type) {
+        return Headers(type,null);
+    }
+
+    public static String getWebName(String url){
+        if (url.contains("mgtv.com")) {
+            return "芒果TV";
+        }
+        if (url.contains("qq.com")) {
+            return "腾讯视频";
+        }
+        if (url.contains("iqiyi.com")) {
+            return "爱奇艺";
+        }
+        if (url.contains("bilibili.com")) {
+            return "哗哩哔哩";
+        }
+        if (url.startsWith("magnet")) {
+            return "磁力";
+        }
+        if (url.contains("aliyundrive")) {
+            return "阿里云";
+        }
+        String host = Uri.parse(url).getHost();
+        return host;
     }
 
     private static final Pattern snifferMatch = Pattern.compile("http((?!http).){26,}?\\.(m3u8|mp4)\\?.*|http((?!http).){26,}\\.(m3u8|mp4)|http((?!http).){26,}?/m3u8\\?pt=m3u8.*|http((?!http).)*?default\\.ixigua\\.com/.*|http((?!http).)*?cdn-tos[^\\?]*|http((?!http).)*?/obj/tos[^\\?]*|http.*?/player/m3u8play\\.php\\?url=.*|http.*?/player/.*?[pP]lay\\.php\\?url=.*|http.*?/playlist/m3u8/\\?vid=.*|http.*?\\.php\\?type=m3u8&.*|http.*?/download.aspx\\?.*|http.*?/api/up_api.php\\?.*|https.*?\\.66yk\\.cn.*|http((?!http).)*?netease\\.com/file/.*");
