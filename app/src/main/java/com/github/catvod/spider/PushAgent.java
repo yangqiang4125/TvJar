@@ -352,6 +352,8 @@ public class PushAgent extends Spider {
         String str;
         try {
             String url = list.get(0).trim();
+            String[] idInfo = url.split("\\$\\$\\$");
+            if (idInfo.length > 1)  url = idInfo[0].trim();
             Pattern pattern = Folder;
             Matcher matcher = pattern.matcher(url);
             if (!matcher.find()) {
@@ -451,7 +453,7 @@ public class PushAgent extends Spider {
     @Override
     public String detailContent(List<String> list) {
         try {
-            String url = list.get(0);
+            String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
             if (idInfo.length > 1)  url = idInfo[0].trim();
             String pic = null;
