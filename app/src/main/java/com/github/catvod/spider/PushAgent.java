@@ -617,17 +617,18 @@ public class PushAgent extends Spider {
                 return getAliContent(list);
             } else if (url.startsWith("http") && (!matcher.find()) && (!matcher2.find())) {
                 JSONObject vodAtom = new JSONObject();
-                Document doc = Jsoup.parse(OkHttpUtil.string(url, null));
+                Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
                 doc.select("div.playon").remove();
+                String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
                 String content = doc.body().html();//[\u4e00-\u9fa5]+
                 String VodName = doc.select("head > title").text();
                 Pattern urlder = Pattern.compile(".*-\\d+.html");
+                Pattern urlder2 = Pattern.compile(".*-\\d+-\\d+");
+                String uri=null,a=null,b=null,text=null,prefxs=null;
                 if(urlder.matcher(url).find()){//集合多个视频
-                    String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
                     String prefxUrl = url.replaceAll("(.*)-\\d+.html", "$1");
                     prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
-                    String uri=null,a=null,b=null,text=null;
-                    String prefxs= url.replaceAll("(.*)-\\d+-\\d+.html", "$1");
+                    prefxs= url.replaceAll("(.*)-\\d+-\\d+.html", "$1");
                     prefxs = prefxs.replace(baseUrl, "");//  /vod/play/70631
                     ArrayList<String> playList = new ArrayList<>();
 
@@ -670,7 +671,40 @@ public class PushAgent extends Spider {
                     String vod_play_url = TextUtils.join("$$$", playList);
                     vodAtom.put("vod_play_from", vod_play_from);
                     vodAtom.put("vod_play_url", vod_play_url);
-                }else {
+                }else if(urlder2.matcher(url).find()){//https://dyxs13.com/paly-215645-9-1/
+                    Map<String, String> m = new LinkedHashMap<>();
+                    String s = "";
+                    if(url.endsWith("/")) s = "/";
+                    prefxs= url.replaceAll(baseUrl+"(.*)-\\d+"+s, "$1");
+                    Matcher mat = Pattern.compile("href=\"("+prefxs+"-\\d+"+s+").*?/a>").matcher(content);
+                    while (mat.find()){
+                        uri = mat.group(1);
+                        a = "<"+mat.group(0);
+                        text=a.replaceAll("<[^>]+>",""); //过滤html标签
+                        text = text.replaceAll("&amp;|&nbsp;", "");
+                        if(text.equals(""))text="其他";
+                        uri=baseUrl + uri;
+                        if(m.containsKey(uri)) m.remove(uri);
+                        m.put(uri, text);
+                    }
+                    if(m.containsKey(url)) {
+                        if(VodName.equals("")){
+                            b = a.replaceAll(".*title=\"(.*)\".*","$1");
+                            if (!b.startsWith("<")) {
+                                b = b.replace("播放", "");
+                                VodName = b;
+                            } else VodName = m.get(url);
+                        }
+                    }
+                    vodItems = new ArrayList<>();
+                    for (String key : m.keySet()) {
+                        vodItems.add(m.get(key) + "$" + key);
+                    }
+
+                    String playList = TextUtils.join("#", vodItems);
+                    vodAtom.put("vod_play_from", "嗅探列表");
+                    vodAtom.put("vod_play_url", playList);
+                } else{
                     vodAtom.put("vod_play_from", "嗅探");
                     vodAtom.put("vod_play_url", "立即播放嗅探$" + url);
                 }

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
+import com.github.catvod.utils.okhttp.OkHttpUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -20,12 +20,11 @@ public class SpiderReq {
     private static final String defaultTag = "sp_req_default";
 
     private static OkHttpClient defaultClient = initDefaultClient();
-    private static final int DEFAULT_TIMEOUT = 35;
     private static OkHttpClient initDefaultClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.readTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
-        builder.writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
-        builder.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+        builder.readTimeout(OkHttpUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+        builder.writeTimeout(OkHttpUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+        builder.connectTimeout(OkHttpUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
         builder.retryOnConnectionFailure(true);
         return builder.build();
     }

@@ -3,7 +3,7 @@ package com.github.catvod.utils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
+import com.github.catvod.utils.okhttp.OkHttpUtil;
 import okhttp3.OkHttpClient;
 
 public class SpiderOKClient {
@@ -12,9 +12,9 @@ public class SpiderOKClient {
     public static OkHttpClient noRedirectClient() {
         if (noRedirectClient == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                    .readTimeout(15, TimeUnit.SECONDS)
-                    .writeTimeout(15, TimeUnit.SECONDS)
-                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(OkHttpUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(OkHttpUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                    .connectTimeout(OkHttpUtil.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .followRedirects(false)
                     .followSslRedirects(false)
                     .retryOnConnectionFailure(true)

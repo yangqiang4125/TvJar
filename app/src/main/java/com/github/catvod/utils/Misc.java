@@ -1,9 +1,7 @@
 package com.github.catvod.utils;
-
 import android.net.Uri;
 import android.os.Build;
 import com.github.catvod.crawler.SpiderDebug;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
@@ -42,7 +40,6 @@ public class Misc {
         }
         return false;
     }
-
     public static boolean isNumeric(String str){
         Pattern pattern = Pattern.compile("[0-9]*");
         return pattern.matcher(str).matches();
@@ -193,7 +190,6 @@ public class Misc {
         taskResult.put("url", url);
         return taskResult;
     }
-
 
     public static Charset CharsetUTF8 = Charset.forName("UTF-8");
     public static Charset CharsetIOS8859 = Charset.forName("iso-8859-1");
