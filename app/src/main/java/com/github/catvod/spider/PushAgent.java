@@ -37,6 +37,7 @@ public class PushAgent extends Spider {
     private static final Map<String, Map<String, String>> dizz = new HashMap();
     private static final ReentrantLock ReentrantLock = new ReentrantLock();
     private static final long n = 0;
+    public static Integer type=1;
     private static final String SiteUrl = "https://api.aliyundrive.com";
     private static final Pattern AliPLink = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     public static Pattern Folder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
@@ -47,8 +48,12 @@ public class PushAgent extends Spider {
         super.init(context, extend);
         if (extend != null) {
             String[] arr = extend.split(";");
-            if (arr.length > 1) {
+            if (arr.length > 0) {
                 this.Token = arr[0];
+                if(arr.length>2){
+                    String aid = arr[2];
+                    if(Misc.isNumeric(aid)) type = Integer.valueOf(aid);
+                }
             }else Token = extend;
            /* if (extend.startsWith("http")) {
                 Token = OkHttpUtil.string(extend, null);
@@ -614,7 +619,8 @@ public class PushAgent extends Spider {
                 JSONObject vodAtom = new JSONObject();
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
                 String content = doc.body().html();//[\u4e00-\u9fa5]+
-                if(url.matches(".*-\\d+.html")){//集合多个视频
+                Pattern urlder = Pattern.compile(".*-\\d+.html");
+                if(urlder.matcher(url).find()){//集合多个视频
                     String baseUrl = url.replaceAll("(http.*(\\w+\\.){2}\\w+).*", "$1");//https://www.dyk9.com
                     String prefxUrl = url.replaceAll("(.*)-\\d+.html", "$1");
                     prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
@@ -688,7 +694,8 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("jx", "1");
                     result.put("url", id);
-                    result.put("header", Misc.jHeaders(1,id).toString());
+                    if(id.contains("bilibili"))result.put("header", Misc.jHeaders(0,id).toString());
+                    else result.put("header", Misc.jHeaders(type,id).toString());
                     return result.toString();
                 }
                 case "player": {
@@ -696,7 +703,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 0);
                     result.put("playUrl", "");
                     result.put("url", id);
-                    result.put("header", Misc.jHeaders(1,id).toString());
+                    result.put("header", Misc.jHeaders(type,id).toString());
                     return result.toString();
                 }
                 case "嗅探": {
@@ -704,7 +711,7 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("playUrl", "");
                     result.put("url", id);
-                    result.put("header", Misc.jHeaders(1,id).toString());
+                    result.put("header", Misc.jHeaders(type,id).toString());
                     return result.toString();
                 }
                 case "AliYun":
