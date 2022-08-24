@@ -43,6 +43,11 @@ public class Misc {
         return false;
     }
 
+    public static boolean isNumeric(String str){
+        Pattern pattern = Pattern.compile("[0-9]*");
+        return pattern.matcher(str).matches();
+    }
+
     public static JSONObject jHeaders(int type,String url) {
         JSONObject headers = new JSONObject();
         try {
