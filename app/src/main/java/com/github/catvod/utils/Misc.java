@@ -43,6 +43,22 @@ public class Misc {
         return false;
     }
 
+    public static JSONObject jHeaders(int type,String url) {
+        JSONObject headers = new JSONObject();
+        try {
+            if(type==0){
+                headers.put("User-Agent", UaWinChrome);
+            }else  headers.put("User-Agent", MoAgent);
+
+            headers.put("Connection", " Keep-Alive");
+            if (url != null) {
+                headers.put("Referer", " " +url);
+            }
+        } catch (JSONException e) {
+        }
+        return headers;
+    }
+
     public static HashMap<String, String> Headers(int type,String url) {
         HashMap<String, String> headers = new HashMap<>();
         if(type==0){
@@ -51,7 +67,7 @@ public class Misc {
 
         headers.put("Connection", " Keep-Alive");
         if (url != null) {
-            headers.put("Referer", url);
+            headers.put("Referer", " " +url);
         }
         return headers;
     }

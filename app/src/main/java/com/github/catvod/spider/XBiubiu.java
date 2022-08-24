@@ -141,9 +141,12 @@ public class XBiubiu extends Spider {
                 //}
             }
             JSONObject result = new JSONObject();
-            result.put("page", pg);
-            result.put("pagecount", Integer.MAX_VALUE);
-            result.put("limit", 90);
+            int limit = 20;
+            int page = Integer.parseInt(pg);
+            result.put("page", page);
+            int pageCount = videos.length() == limit ? page + 1 : page;
+            result.put("pagecount", pageCount);
+            result.put("limit", limit);
             result.put("total", Integer.MAX_VALUE);
             result.put("list", videos);
             return result;
@@ -296,7 +299,7 @@ public class XBiubiu extends Spider {
             result.put("parse", 1);
             result.put("playUrl", "");
             result.put("url", webUrl);
-            result.put("header", Misc.Headers(1));
+            result.put("header", Misc.jHeaders(1,webUrl).toString());
             return result.toString();
         } catch (Exception e) {
             SpiderDebug.log(e);
