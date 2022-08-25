@@ -77,25 +77,35 @@ public class Misc {
         return Headers(type,null);
     }
 
-    public static String getWebName(String url){
+    public static String getWebName(String url,int type){
         if (url.contains("mgtv.com")) {
-            return "芒果TV";
+            if(type==0) return "芒果TV";
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/mgtv.jpg";
         }
         if (url.contains("qq.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/qq.jpg";
             return "腾讯视频";
         }
         if (url.contains("iqiyi.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/iqiyi.jpg";
             return "爱奇艺";
         }
+        if (url.contains("youku.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/youku.jpg";
+            return "优酷";
+        }
         if (url.contains("bilibili.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/bili.jpg";
             return "哗哩哔哩";
         }
         if (url.startsWith("magnet")) {
             return "磁力";
         }
         if (url.contains("aliyundrive")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/ali.jpg";
             return "阿里云";
         }
+        if(type==1)return "http://image.xinjun58.com/sp/pic/bg/zl.jpg";
         String host = Uri.parse(url).getHost();
         return host;
     }

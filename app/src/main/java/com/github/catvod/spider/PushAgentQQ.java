@@ -124,6 +124,7 @@ public class PushAgentQQ extends Spider {
                 url = getRuleVal(jsonObject, "url");
                 name = getRuleVal(jsonObject, "name");
                 pic = getRuleVal(jsonObject, "pic");
+                if(pic.equals("")) pic = Misc.getWebName(url, 1);
                 v = new JSONObject();
                 v.put("vod_id", url + "$$$" + pic + "$$$" + name);
                 v.put("vod_name", name);
