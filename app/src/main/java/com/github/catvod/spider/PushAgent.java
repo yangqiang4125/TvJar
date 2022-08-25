@@ -646,7 +646,7 @@ public class PushAgent extends Spider {
                             uri=baseUrl + uri;
                             if(m.containsKey(uri)){
                                 b = m.get(uri);
-                                if(b.contains("一集")||(!b.contains("集")&&!b.contains("第"))||Misc.isNumeric(b)){
+                                if(b.contains("一集")||b.contains("上集")||b.contains("下集")||(!b.contains("集")&&!b.contains("第"))||Misc.isNumeric(b)){
                                     m.remove(uri);
                                     m.put(uri, text);
                                 }
