@@ -39,6 +39,7 @@ public class PushAgentQQ extends Spider {
             if (flag || rule == null) {
                 String json = OkHttpUtil.string(ext+"?t="+Time(), null);
                 rule = new JSONObject(json);
+                pushAgent.type = rule.optInt("modelType", 1);
             }
         } catch (Exception e) {
         }
