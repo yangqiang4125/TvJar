@@ -255,6 +255,8 @@ public class XBiubiu extends Spider {
                     SpiderDebug.log(e);
                 }
             }
+
+            director = ids.get(0);//查看网址
             JSONObject vod = new JSONObject();
             vod.put("vod_id", ids.get(0));
             vod.put("vod_name", title);

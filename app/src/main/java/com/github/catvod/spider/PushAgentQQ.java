@@ -129,7 +129,7 @@ public class PushAgentQQ extends Spider {
                 v.put("vod_id", url + "$$$" + pic + "$$$" + name);
                 v.put("vod_name", name);
                 v.put("vod_pic", pic);
-                v.put("vod_remarks", Misc.getWebName(url));
+                v.put("vod_remarks", Misc.getWebName(url,0));
                 videos.put(v);
             }
 

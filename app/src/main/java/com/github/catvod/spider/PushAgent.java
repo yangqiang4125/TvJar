@@ -467,17 +467,13 @@ public class PushAgent extends Spider {
             Matcher matcher2 = pattern2.matcher(url);
             Matcher matcher = pattern.matcher(url);
             List<String> vodItems = new ArrayList<>();
+            String typeName = Misc.getWebName(url, 0);
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
-                String typeName = "官源",vpic="";
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
                 String VodName = doc.select("head > title").text();
                 JSONObject result = new JSONObject();
                 JSONArray lists = new JSONArray();
                 JSONObject vodAtom = new JSONObject();
-                if(url.contains("iqiyi")) {
-                    typeName = "爱奇艺";
-                    vpic = "http://image.xinjun58.com/sp/pic/bg/iqiyi.jpg";
-                }else if(url.contains("bili"))vpic="http://image.xinjun58.com/sp/pic/bg/bili.jpg";
                 vodAtom.put("vod_id", url);
                 vodAtom.put("vod_name", VodName);
                 vodAtom.put("vod_pic", pic);
@@ -530,7 +526,7 @@ public class PushAgent extends Spider {
                 vodAtom.put("vod_id", url);
                 vodAtom.put("vod_name", VodName);
                 vodAtom.put("vod_pic", pic);
-                vodAtom.put("type_name", "腾讯TV");
+                vodAtom.put("type_name", typeName);
                 vodAtom.put("vod_year", "");
                 vodAtom.put("vod_area", "");
                 vodAtom.put("vod_remarks", remarks);
@@ -574,7 +570,7 @@ public class PushAgent extends Spider {
                 vodAtom.put("vod_id", url);
                 vodAtom.put("vod_name", VodNames);
                 vodAtom.put("vod_pic", pic);
-                vodAtom.put("type_name", "芒果TV");
+                vodAtom.put("type_name", typeName);
                 vodAtom.put("vod_year", "");
                 vodAtom.put("vod_area", "");
                 vodAtom.put("vod_remarks", "");
@@ -729,6 +725,7 @@ public class PushAgent extends Spider {
                 vodAtom.put("vod_name", VodName);
                 vodAtom.put("vod_pic", pic);
                 vodAtom.put("type_name", "嗅探");
+                vodAtom.put("type_name", typeName);
                 vodAtom.put("vod_content", url);
 
                 lists.put(vodAtom);
