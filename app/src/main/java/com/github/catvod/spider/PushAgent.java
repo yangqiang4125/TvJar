@@ -11,6 +11,7 @@ import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,6 +43,8 @@ public class PushAgent extends Spider {
     private static final Pattern AliPLink = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     public static Pattern Folder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
     public static String Token="3a49cf29cf20410997247c6eb4509be9";
+    public static JSONObject siteRule = null;
+    public static String jsonUrl = "http://test.xinjun58.com/sp/d.json";
 
     @Override
     public void init(Context context, String extend) {
@@ -61,7 +64,39 @@ public class PushAgent extends Spider {
         }
     }
 
-    protected static long Time() {
+    public JSONObject fetchRule(boolean flag,int t) {
+        try {
+            if (flag || siteRule == null) {
+                String json = OkHttpUtil.string(jsonUrl+"?t="+Time(), null);
+                JSONObject jo = new JSONObject(json);
+                type = jo.optInt("modelType", 1);
+                if(t==0) {
+                    String[] fenleis = getRuleVal(jo,"fenlei", "").split("#");
+                    for (String fenlei : fenleis) {
+                        String[] info = fenlei.split("\\$");
+                        jo.remove(info[1]);
+                    }
+                    siteRule = jo;
+                }
+                return jo;
+            }
+        } catch (JSONException e) {
+        }
+        return siteRule;
+    }
+
+    public String getRuleVal(JSONObject o,String key, String defaultVal) {
+        String v = o.optString(key);
+        if (v.isEmpty() || v.equals("空"))
+            return defaultVal;
+        return v;
+    }
+
+    public String getRuleVal(JSONObject o,String key) {
+        return getRuleVal(o,key, "");
+    }
+
+    public static long Time() {
         return (System.currentTimeMillis() / 1000) + n;
     }
 
@@ -617,14 +652,33 @@ public class PushAgent extends Spider {
                 return getAliContent(list,pic);
             } else if (url.startsWith("http") && (!matcher.find()) && (!matcher2.find())) {
                 JSONObject vodAtom = new JSONObject();
-                Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
-                doc.select("div.playon").remove();
+                Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
-                String content = doc.body().html();//[\u4e00-\u9fa5]+
-                String VodName = doc.select("head > title").text();
                 Pattern urlder = Pattern.compile(".*-\\d+.html");
                 Pattern urlder2 = Pattern.compile(".*-\\d+-\\d+");
-                String uri=null,a=null,b=null,text=null,prefxs=null;
+                String content=null,uri=null,a=null,b=null,hz=null,text=null,prefxs=null;
+                boolean fb = true;
+                Matcher mh = null;
+                if(!url.contains("-")){
+                    fetchRule(false, 0);
+                    String site2 = siteRule.optString("site2", "");
+                    if (site2.contains(typeName)) {//https://www.dyk9.com/vod/detail/11203.html 详情页面再点击一次之后 才有播放地址
+                        doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
+                        content = doc.body().html();
+                        hz=url.replaceAll(".*(\\..*)", "$1");
+                        String detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
+                        mh = Pattern.compile("href=\"(.*/"+detailRex+"-.*"+hz+")\"").matcher(content);
+                        while (mh.find()&&fb){
+                            fb=false;
+                            url = baseUrl+mh.group(1);
+                        }
+                    }
+                }
+
+                doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
+                String VodName = doc.select("head > title").text();
+                doc.select("div.playon").remove();
+                content = doc.body().html();//[\u4e00-\u9fa5]+
                 if(urlder.matcher(url).find()){//集合多个视频
                     String prefxUrl = url.replaceAll("(.*)-\\d+.html", "$1");
                     prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
@@ -633,7 +687,7 @@ public class PushAgent extends Spider {
                     ArrayList<String> playList = new ArrayList<>();
 
                     for (int i = 0; i < 9; i++) {
-                        boolean fb = false;
+                        fb = false;
                         if(!content.contains(prefxs+"-"+i+"-"))continue;
                         Map<String, String> m = new LinkedHashMap<>();
                         Matcher mat = Pattern.compile("href=\"("+prefxs+"-"+i+"-\\d+.html).*?/a>").matcher(content);
@@ -774,7 +828,7 @@ public class PushAgent extends Spider {
                 result.put("parse", 1);
                 result.put("playUrl", "");
                 result.put("url", id);
-                result.put("header", Misc.jHeaders(type,id).toString());
+                result.put("header", Misc.Headers(type,id));
                 return result.toString();
             }
         } catch (Exception e) {
