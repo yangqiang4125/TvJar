@@ -614,12 +614,15 @@ public class PushAgent extends Spider {
             } else if (url.startsWith("http") && (!matcher.find()) && (!matcher2.find())) {
                 Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
-                Pattern urlder = Pattern.compile(".*\\d+.html");
+                Pattern urlder = Pattern.compile(".*(\\d+.html|\\d+/)$");
+                Pattern urlder1 = Pattern.compile(".*-?(\\d+)/");
                 Pattern urlder2 = Pattern.compile(".*-\\d+-\\d+");
-                String content=null,uri=null,a=null,b=null,hz=null,text=null,prefxs=null,detailRex;
+                String content=null,uri=null,a=null,b=null,hz="",text=null,prefxs=null,detailRex=null;
                 boolean fb = true;
                 Matcher mh = null;
-                if(!url.contains("-")){
+                hz=url.replaceAll(".*(\\..*)", "$1");
+                if(hz.length()>6)hz="";
+                if(!url.contains("-")&&hz.length()>0){
                     String site2 = fetchRule(false,0).optString("site2", "");
                     if (site2.contains(typeName)) {//https://www.dyk9.com/vod/detail/11203.html 详情页面再点击一次之后 才有播放地址
                         doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
@@ -638,28 +641,39 @@ public class PushAgent extends Spider {
                 VodName = doc.select("head > title").text();
                 doc.select("div.playon").remove();
                 content = doc.body().html();//[\u4e00-\u9fa5]+
+                if(content.equals("")) return "";
                 if(urlder.matcher(url).find()){//集合多个视频
                     //String prefxUrl = url.replace(".html", "");
                     //prefxUrl = url.replaceAll("(.*)-\\d+", "$1");
                     //prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
                     if(!url.contains("-")){
                         detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
-                        mh = Pattern.compile("href=\"(.*/"+detailRex+"-.*.html)\"").matcher(content);
+                        detailRex = "href=\"(.*"+detailRex+"-.*"+hz+")\"";
+                    }else if(urlder1.matcher(url).find()){
+                        hz = "/";
+                        detailRex = url.replaceAll(".*-(\\d+)"+hz, "$1");
+                        detailRex = "href=\"(.*"+detailRex+"-.*"+hz+")\"";
+                    }
+                    if (detailRex!=null) {
+                        mh = Pattern.compile(detailRex).matcher(content);
                         while (mh.find()&&fb){
                             fb=false;
                             url = baseUrl+mh.group(1);
                         }
                     }
+                    //https://dyxs13.com/paly-47817-10-1/
+                    if (!hz.equals("")) {
+                        prefxs= url.replaceAll("(.*)-\\d+-\\d+"+hz, "$1");
+                    }else prefxs= url.replaceAll("(.*)-\\d+-\\d+", "$1");
 
-                    prefxs= url.replaceAll("(.*)-\\d+-\\d+.html", "$1");
                     prefxs = prefxs.replace(baseUrl, "");//  /vod/play/70631
                     prefxs = prefxs.replace(".html", "");
                     ArrayList<String> playList = new ArrayList<>();
-                    for (int i = 0; i < 9; i++) {
+                    for (int i = 0; i < 12; i++) {
                         fb = false;
                         if(!content.contains(prefxs+"-"+i+"-"))continue;
                         Map<String, String> m = new LinkedHashMap<>();
-                        Matcher mat = Pattern.compile("href=\"("+prefxs+"-"+i+"-\\d+.html).*?/a>").matcher(content);
+                        Matcher mat = Pattern.compile("href=\"("+prefxs+"-"+i+"-\\d+"+hz+").*?/a>").matcher(content);
                         while (mat.find()){
                             uri = mat.group(1);
                             a = "<"+mat.group(0);
@@ -703,40 +717,7 @@ public class PushAgent extends Spider {
                     String vod_play_url = TextUtils.join("$$$", playList);
                     vodAtom.put("vod_play_from", vod_play_from);
                     vodAtom.put("vod_play_url", vod_play_url);
-                }else if(urlder2.matcher(url).find()){//https://dyxs13.com/paly-215645-9-1/
-                    Map<String, String> m = new LinkedHashMap<>();
-                    String s = "";
-                    if(url.endsWith("/")) s = "/";
-                    prefxs= url.replaceAll(baseUrl+"(.*)-\\d+"+s, "$1");
-                    Matcher mat = Pattern.compile("href=\"("+prefxs+"-\\d+"+s+").*?/a>").matcher(content);
-                    while (mat.find()){
-                        uri = mat.group(1);
-                        a = "<"+mat.group(0);
-                        text=a.replaceAll("<[^>]+>",""); //过滤html标签
-                        text = text.replaceAll("&amp;|&nbsp;", "");
-                        if(text.equals(""))text="其他";
-                        uri=baseUrl + uri;
-                        if(m.containsKey(uri)) m.remove(uri);
-                        m.put(uri, text);
-                    }
-                    if(m.containsKey(url)) {
-                        if(VodName.equals("")){
-                            b = a.replaceAll(".*title=\"(.*)\".*","$1");
-                            if (!b.startsWith("<")) {
-                                b = b.replace("播放", "");
-                                VodName = b;
-                            } else VodName = m.get(url);
-                        }
-                    }
-                    vodItems = new ArrayList<>();
-                    for (String key : m.keySet()) {
-                        vodItems.add(m.get(key) + "$" + key);
-                    }
-
-                    String playList = TextUtils.join("#", vodItems);
-                    vodAtom.put("vod_play_from", "嗅探列表");
-                    vodAtom.put("vod_play_url", playList);
-                } else{
+                }else{
                     vodAtom.put("vod_play_from", "嗅探");
                     vodAtom.put("vod_play_url", "立即播放嗅探$" + url);
                 }
@@ -750,7 +731,7 @@ public class PushAgent extends Spider {
                 return result.toString();
             }
         } catch (Throwable throwable) {
-
+            return "";
         }
         return "";
     }
