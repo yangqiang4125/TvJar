@@ -66,7 +66,6 @@ public class PushAgent extends Spider {
             if (flag || siteRule == null) {
                 String json = OkHttpUtil.string(jsonUrl+"?t="+Time(), null);
                 JSONObject jo = new JSONObject(json);
-                type = jo.optInt("modelType", 1);
                 if(t==0) {
                     String[] fenleis = getRuleVal(jo,"fenlei", "").split("#");
                     for (String fenlei : fenleis) {
