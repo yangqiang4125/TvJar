@@ -51,7 +51,7 @@ public class Misc {
             if(type==0){
                 headers.put("User-Agent", UaWinChrome);
             }else  headers.put("User-Agent", MoAgent);
-
+            headers.put("Accept", " */*");
             headers.put("Connection", " Keep-Alive");
             if (url != null) {
                 headers.put("Referer", " " +url);
