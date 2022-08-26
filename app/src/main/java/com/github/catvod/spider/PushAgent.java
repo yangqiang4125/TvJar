@@ -3,13 +3,15 @@ package com.github.catvod.spider;
 import android.content.Context;
 import android.net.UrlQuerySanitizer;
 import android.text.TextUtils;
-
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
-
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,11 +25,6 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class PushAgent extends Spider {
 
@@ -654,19 +651,18 @@ public class PushAgent extends Spider {
                 JSONObject vodAtom = new JSONObject();
                 Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
-                Pattern urlder = Pattern.compile(".*-\\d+.html");
+                Pattern urlder = Pattern.compile(".*\\d+.html");
                 Pattern urlder2 = Pattern.compile(".*-\\d+-\\d+");
-                String content=null,uri=null,a=null,b=null,hz=null,text=null,prefxs=null;
+                String content=null,uri=null,a=null,b=null,hz=null,text=null,prefxs=null,detailRex;
                 boolean fb = true;
                 Matcher mh = null;
                 if(!url.contains("-")){
-                    fetchRule(false, 0);
-                    String site2 = siteRule.optString("site2", "");
+                    String site2 = fetchRule(false,0).optString("site2", "");
                     if (site2.contains(typeName)) {//https://www.dyk9.com/vod/detail/11203.html 详情页面再点击一次之后 才有播放地址
                         doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
                         content = doc.body().html();
                         hz=url.replaceAll(".*(\\..*)", "$1");
-                        String detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
+                        detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
                         mh = Pattern.compile("href=\"(.*/"+detailRex+"-.*"+hz+")\"").matcher(content);
                         while (mh.find()&&fb){
                             fb=false;
@@ -680,12 +676,22 @@ public class PushAgent extends Spider {
                 doc.select("div.playon").remove();
                 content = doc.body().html();//[\u4e00-\u9fa5]+
                 if(urlder.matcher(url).find()){//集合多个视频
-                    String prefxUrl = url.replaceAll("(.*)-\\d+.html", "$1");
-                    prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
+                    //String prefxUrl = url.replace(".html", "");
+                    //prefxUrl = url.replaceAll("(.*)-\\d+", "$1");
+                    //prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
+                    if(!url.contains("-")){
+                        detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
+                        mh = Pattern.compile("href=\"(.*/"+detailRex+"-.*.html)\"").matcher(content);
+                        while (mh.find()&&fb){
+                            fb=false;
+                            url = baseUrl+mh.group(1);
+                        }
+                    }
+
                     prefxs= url.replaceAll("(.*)-\\d+-\\d+.html", "$1");
                     prefxs = prefxs.replace(baseUrl, "");//  /vod/play/70631
+                    prefxs = prefxs.replace(".html", "");
                     ArrayList<String> playList = new ArrayList<>();
-
                     for (int i = 0; i < 9; i++) {
                         fb = false;
                         if(!content.contains(prefxs+"-"+i+"-"))continue;
@@ -700,7 +706,7 @@ public class PushAgent extends Spider {
                             uri=baseUrl + uri;
                             if(m.containsKey(uri)){
                                 b = m.get(uri);
-                                if(b.contains("一集")||b.contains("上集")||b.contains("下集")||(!b.contains("集")&&!b.contains("第"))||Misc.isNumeric(b)){
+                                if(b.contains("线路")||b.contains("一集")||b.contains("上集")||b.contains("下集")||(!b.contains("集")&&!b.contains("第"))||Misc.isNumeric(b)){
                                     m.remove(uri);
                                     m.put(uri, text);
                                 }
@@ -828,7 +834,7 @@ public class PushAgent extends Spider {
                 result.put("parse", 1);
                 result.put("playUrl", "");
                 result.put("url", id);
-                result.put("header", Misc.Headers(type,id));
+                result.put("header", Misc.jHeaders(type,id).toString());
                 return result.toString();
             }
         } catch (Exception e) {

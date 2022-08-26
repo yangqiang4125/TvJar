@@ -141,12 +141,9 @@ public class XBiubiu extends Spider {
                 //}
             }
             JSONObject result = new JSONObject();
-            int limit = 20;
-            int page = Integer.parseInt(pg);
-            result.put("page", page);
-            int pageCount = videos.length() == limit ? page + 1 : page;
-            result.put("pagecount", pageCount);
-            result.put("limit", limit);
+            result.put("page", pg);
+            result.put("pagecount", Integer.MAX_VALUE);
+            result.put("limit", 90);
             result.put("total", Integer.MAX_VALUE);
             result.put("list", videos);
             return result;
@@ -256,7 +253,6 @@ public class XBiubiu extends Spider {
                 }
             }
 
-            director = webUrl;//查看网址
             JSONObject vod = new JSONObject();
             vod.put("vod_id", ids.get(0));
             vod.put("vod_name", title);

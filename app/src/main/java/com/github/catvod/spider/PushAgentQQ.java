@@ -8,13 +8,9 @@ import com.github.catvod.utils.okhttp.OkHttpUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PushAgentQQ extends Spider {
     private PushAgent pushAgent;
@@ -114,13 +110,13 @@ public class PushAgentQQ extends Spider {
             }
 
             JSONObject result = new JSONObject();
-            int limit = 20;
+            int limit = 20;int total = videos.length();
             int page = Integer.parseInt(pg);
             result.put("page", page);
-            int pageCount = videos.length() == limit ? page + 1 : page;
+            int pageCount = (int)Math.ceil((double)total/limit);
             result.put("pagecount", pageCount);
             result.put("limit", limit);
-            result.put("total", Integer.MAX_VALUE);
+            result.put("total", total);
             result.put("list", videos);
             return result;
         } catch (Exception e) {
@@ -148,6 +144,11 @@ public class PushAgentQQ extends Spider {
 
     @Override
     public  String searchContent(String key, boolean quick) {
+        if (key.equals("000")) {
+            PushAgent.type=0;
+        }if (key.equals("111")) {
+            PushAgent.type=1;
+        }
         JSONObject result = new JSONObject();
         JSONArray videos = new JSONArray();
         try {
@@ -175,7 +176,7 @@ public class PushAgentQQ extends Spider {
                     v.put("vod_id", url + "$$$" + pic + "$$$" + name);
                     v.put("vod_name", "["+siteName+"]"+name);
                     v.put("vod_pic", pic);
-                    v.put("vod_remarks", siteName);
+                    v.put("vod_remarks", "");
                     videos.put(v);
                 }
             }
