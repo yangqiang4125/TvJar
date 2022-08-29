@@ -47,18 +47,22 @@ public class PushAgent extends Spider {
     public void init(Context context, String extend) {
         super.init(context, extend);
         if (extend != null) {
-            String[] arr = extend.split(";");
-            if (arr.length > 0) {
-                this.Token = arr[0];
-                if(arr.length>2){
-                    String aid = arr[2];
-                    if(Misc.isNumeric(aid)) type = Integer.valueOf(aid);
-                }
-            }else Token = extend;
-           /* if (extend.startsWith("http")) {
-                Token = OkHttpUtil.string(extend, null);
-            } */
+            getToken(Token);
         }
+    }
+
+    public void getToken(String token){
+        String[] arr = token.split(";");
+        if (arr.length > 0) {
+            token = arr[0];
+            if(arr.length>2){
+                String aid = arr[2];
+                if(Misc.isNumeric(aid)) type = Integer.valueOf(aid);
+            }
+        }
+        if (token.startsWith("http")) {
+            Token = OkHttpUtil.string(token, null);
+        }else Token = token;
     }
 
     public JSONObject fetchRule(boolean flag,int t) {
@@ -73,6 +77,10 @@ public class PushAgent extends Spider {
                         jo.remove(info[1]);
                     }
                     siteRule = jo;
+                    String tk = siteRule.optString("token","");
+                    if(!tk.equals("")){
+                        getToken(tk);
+                    }
                 }
                 return jo;
             }
@@ -380,7 +388,7 @@ public class PushAgent extends Spider {
         }
     }
 
-    public String getAliContent(List<String> list,String pic) {
+    public String getAliContent(List<String> list,String pic,JSONObject jSONObject6) {
         String str;
         try {
             String url = list.get(0).trim();
@@ -430,12 +438,9 @@ public class PushAgent extends Spider {
                 jSONObject4 = jSONArray.getJSONObject(0);
                 str = jSONObject4.getString("file_id");
             }
-            JSONObject jSONObject6 = new JSONObject();
             jSONObject6.put("vod_id", url);
             String string3 = jSONObject3.getString("share_name");
             jSONObject6.put("vod_name", string3);
-            jSONObject6.put("vod_pic", pic);
-            jSONObject6.put("vod_content", url);
             jSONObject6.put("vod_play_from", "AliYun");
             ArrayList arrayList = new ArrayList();
             String string4 = jSONObject4.getString("type");
@@ -506,7 +511,7 @@ public class PushAgent extends Spider {
             vodAtom.put("vod_pic", pic);
             vodAtom.put("type_name", typeName);
             vodAtom.put("vod_content", url);
-            vodAtom.put("vod_area", type);
+            vodAtom.put("vod_area", type + Token);
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
                 VodName = doc.select("head > title").text();
@@ -610,7 +615,7 @@ public class PushAgent extends Spider {
                 result.put("list", lists);
                 return result.toString();
             } else if (url.startsWith("http") && (matcher2.find())) {
-                return getAliContent(list,pic);
+                return getAliContent(list,pic,vodAtom);
             } else if (url.startsWith("http") && (!matcher.find()) && (!matcher2.find())) {
                 Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
@@ -620,8 +625,12 @@ public class PushAgent extends Spider {
                 String content=null,uri=null,a=null,b=null,hz="",text=null,prefxs=null,detailRex=null;
                 boolean fb = true;
                 Matcher mh = null;
-                hz=url.replaceAll(".*(\\..*)", "$1");
-                if(hz.length()>6)hz="";
+                if(url.endsWith("/")) hz = "/";
+                else {
+                    hz=url.replaceAll(".*(\\..*)", "$1");
+                    if(hz.length()>6)hz="";
+                }
+
                 if(!url.contains("-")&&hz.length()>0){
                     String site2 = fetchRule(false,0).optString("site2", "");
                     if (site2.contains(typeName)) {//https://www.dyk9.com/vod/detail/11203.html 详情页面再点击一次之后 才有播放地址
@@ -649,8 +658,7 @@ public class PushAgent extends Spider {
                     if(!url.contains("-")){
                         detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
                         detailRex = "href=\"(.*"+detailRex+"-.*"+hz+")\"";
-                    }else if(urlder1.matcher(url).find()){
-                        hz = "/";
+                    }else if(url.split("-").length<2&&urlder1.matcher(url).find()){
                         detailRex = url.replaceAll(".*-(\\d+)"+hz, "$1");
                         detailRex = "href=\"(.*"+detailRex+"-.*"+hz+")\"";
                     }
@@ -730,7 +738,8 @@ public class PushAgent extends Spider {
                 result.put("list", lists);
                 return result.toString();
             }
-        } catch (Throwable throwable) {
+        } catch (Throwable th) {
+            SpiderDebug.log(th);
             return "";
         }
         return "";
