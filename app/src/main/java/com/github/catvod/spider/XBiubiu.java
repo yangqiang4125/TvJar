@@ -22,13 +22,14 @@ import java.util.regex.Pattern;
 import okhttp3.Call;
 
 public class XBiubiu extends Spider {
-
+    private PushAgent pushAgent= null;
     @Override
     public void init(Context context) {
         super.init(context);
     }
 
     public void init(Context context, String extend) {
+        pushAgent= new PushAgent();
         super.init(context, extend);
         this.ext = extend;
     }
@@ -163,124 +164,128 @@ public class XBiubiu extends Spider {
     public String detailContent(List<String> ids) {
         try {
             fetchRule();
-            String[] idInfo = ids.get(0).split("\\$\\$\\$");
-            String webUrl = getRuleVal("url") + idInfo[2];
-            String html = fetch(webUrl);
-            String parseContent = html;
-            boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
-            if (bfshifouercijiequ) {
-                String jiequqian = getRuleVal("bfjiequqian");
-                String jiequhou = getRuleVal("bfjiequhou");
-                parseContent = subContent(html, jiequqian, jiequhou).get(0);
-            }
-
-            ArrayList<String> playList = new ArrayList<>();
-
             String jiequshuzuqian = getRuleVal("bfjiequshuzuqian");
-            String jiequshuzuhou = getRuleVal("bfjiequshuzuhou");
-            boolean bfyshifouercijiequ = getRuleVal("bfyshifouercijiequ").equals("1");
-            ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
-            for (int i = 0; i < jiequContents.size(); i++) {
-                try {
-                    String jiequContent = jiequContents.get(i);
-                    String parseJqContent = bfyshifouercijiequ ? subContent(jiequContent, getRuleVal("bfyjiequqian"), getRuleVal("bfyjiequhou")).get(0) : jiequContent;
-                    ArrayList<String> lastParseContents = subContent(parseJqContent, getRuleVal("bfyjiequshuzuqian"), getRuleVal("bfyjiequshuzuhou"));
-                    List<String> vodItems = new ArrayList<>();
-                    for (int j = 0; j < lastParseContents.size(); j++) {
-                        String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
-                        String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
-                        vodItems.add(title + "$" + link);
+            boolean bfjiequshuzuqian = jiequshuzuqian.equals("");
+            if(bfjiequshuzuqian){
+                String[] idInfo = ids.get(0).split("\\$\\$\\$");
+                String webUrl = getRuleVal("url") + idInfo[0];
+                String html = fetch(webUrl);
+                String parseContent = html;
+                boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
+                if (bfshifouercijiequ) {
+                    String jiequqian = getRuleVal("bfjiequqian");
+                    String jiequhou = getRuleVal("bfjiequhou");
+                    parseContent = subContent(html, jiequqian, jiequhou).get(0);
+                }
+
+                ArrayList<String> playList = new ArrayList<>();
+
+
+                String jiequshuzuhou = getRuleVal("bfjiequshuzuhou");
+                boolean bfyshifouercijiequ = getRuleVal("bfyshifouercijiequ").equals("1");
+                ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
+                for (int i = 0; i < jiequContents.size(); i++) {
+                    try {
+                        String jiequContent = jiequContents.get(i);
+                        String parseJqContent = bfyshifouercijiequ ? subContent(jiequContent, getRuleVal("bfyjiequqian"), getRuleVal("bfyjiequhou")).get(0) : jiequContent;
+                        ArrayList<String> lastParseContents = subContent(parseJqContent, getRuleVal("bfyjiequshuzuqian"), getRuleVal("bfyjiequshuzuhou"));
+                        List<String> vodItems = new ArrayList<>();
+                        for (int j = 0; j < lastParseContents.size(); j++) {
+                            String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
+                            String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
+                            vodItems.add(title + "$" + link);
+                        }
+                        playList.add(0, android.text.TextUtils.join("#", vodItems));
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                        break;
                     }
-                    playList.add(0, TextUtils.join("#", vodItems));
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                    break;
                 }
-            }
 
-            String cover = idInfo[1], title = idInfo[0], area = "";
-            String director = "";
-            String actor = "";
-            String desc = "";
-            String remark = "";
-            String year = "";
-            String category = "";
+                String cover = idInfo[1], title = idInfo[2], area = "";
+                String director = "";
+                String actor = "";
+                String desc = "";
+                String remark = "";
+                String year = "";
+                String category = "";
 
-            if (!getRuleVal("leixinqian").isEmpty() && !getRuleVal("leixinhou").isEmpty()) {
-                try {
-                    category = subContent(html, getRuleVal("leixinqian"), getRuleVal("leixinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("niandaiqian").isEmpty() && !getRuleVal("niandaihou").isEmpty()) {
-                try {
-                    year = subContent(html, getRuleVal("niandaiqian"), getRuleVal("niandaihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("zhuangtaiqian").isEmpty() && !getRuleVal("zhuangtaihou").isEmpty()) {
-                try {
-                    remark = subContent(html, getRuleVal("zhuangtaiqian"), getRuleVal("zhuangtaihou")).get(0);
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("zhuyanqian").isEmpty() && !getRuleVal("zhuyanhou").isEmpty()) {
-                try {
-                    actor = subContent(html, getRuleVal("zhuyanqian"), getRuleVal("zhuyanhou")).get(0).replaceAll("\\s+", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("daoyanqian").isEmpty() && !getRuleVal("daoyanhou").isEmpty()) {
-                try {
-                    director = subContent(html, getRuleVal("daoyanqian"), getRuleVal("daoyanhou")).get(0).replaceAll("\\s+", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("juqingqian").isEmpty() && !getRuleVal("juqinghou").isEmpty()) {
-                try {
-                    desc = subContent(html, getRuleVal("juqingqian"), getRuleVal("juqinghou")).get(0);
-                    if(desc!=null){
-                        desc = desc.replace("\t", "");
-                        desc = desc.replaceAll("\\.*>(.*)", "$1");
+                if (!getRuleVal("leixinqian").isEmpty() && !getRuleVal("leixinhou").isEmpty()) {
+                    try {
+                        category = subContent(html, getRuleVal("leixinqian"), getRuleVal("leixinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
                     }
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
                 }
-            }
+                if (!getRuleVal("niandaiqian").isEmpty() && !getRuleVal("niandaihou").isEmpty()) {
+                    try {
+                        year = subContent(html, getRuleVal("niandaiqian"), getRuleVal("niandaihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("zhuangtaiqian").isEmpty() && !getRuleVal("zhuangtaihou").isEmpty()) {
+                    try {
+                        remark = subContent(html, getRuleVal("zhuangtaiqian"), getRuleVal("zhuangtaihou")).get(0);
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("zhuyanqian").isEmpty() && !getRuleVal("zhuyanhou").isEmpty()) {
+                    try {
+                        actor = subContent(html, getRuleVal("zhuyanqian"), getRuleVal("zhuyanhou")).get(0).replaceAll("\\s+", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("daoyanqian").isEmpty() && !getRuleVal("daoyanhou").isEmpty()) {
+                    try {
+                        director = subContent(html, getRuleVal("daoyanqian"), getRuleVal("daoyanhou")).get(0).replaceAll("\\s+", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("juqingqian").isEmpty() && !getRuleVal("juqinghou").isEmpty()) {
+                    try {
+                        desc = subContent(html, getRuleVal("juqingqian"), getRuleVal("juqinghou")).get(0);
+                        if(desc!=null){
+                            desc = desc.replace("\t", "");
+                            desc = desc.replaceAll("\\.*>(.*)", "$1");
+                        }
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
 
-            JSONObject vod = new JSONObject();
-            vod.put("vod_id", ids.get(0));
-            vod.put("vod_name", title);
-            vod.put("vod_pic", cover);
-            vod.put("type_name", category);
-            vod.put("vod_year", year);
-            vod.put("vod_area", area);
-            vod.put("vod_remarks", remark);
-            vod.put("vod_actor", actor);
-            vod.put("vod_director", director);
-            vod.put("vod_content", desc);
+                JSONObject vod = new JSONObject();
+                vod.put("vod_id", ids.get(0));
+                vod.put("vod_name", title);
+                vod.put("vod_pic", cover);
+                vod.put("type_name", category);
+                vod.put("vod_year", year);
+                vod.put("vod_area", area);
+                vod.put("vod_remarks", remark);
+                vod.put("vod_actor", actor);
+                vod.put("vod_director", director);
+                vod.put("vod_content", desc);
 
-            ArrayList<String> playFrom = new ArrayList<>();
+                ArrayList<String> playFrom = new ArrayList<>();
 
-            for (int i = 0; i < playList.size(); i++) {
-                playFrom.add("播放列表" + (i + 1));
-            }
+                for (int i = 0; i < playList.size(); i++) {
+                    playFrom.add("播放列表" + (i + 1));
+                }
 
-            String vod_play_from = TextUtils.join("$$$", playFrom);
-            String vod_play_url = TextUtils.join("$$$", playList);
-            vod.put("vod_play_from", vod_play_from);
-            vod.put("vod_play_url", vod_play_url);
+                String vod_play_from = android.text.TextUtils.join("$$$", playFrom);
+                String vod_play_url = TextUtils.join("$$$", playList);
+                vod.put("vod_play_from", vod_play_from);
+                vod.put("vod_play_url", vod_play_url);
 
-            JSONObject result = new JSONObject();
-            JSONArray list = new JSONArray();
-            list.put(vod);
-            result.put("list", list);
-            return result.toString();
+                JSONObject result = new JSONObject();
+                JSONArray list = new JSONArray();
+                list.put(vod);
+                result.put("list", list);
+                return result.toString();
+            } else return pushAgent.detailContent(ids);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }

@@ -4,6 +4,7 @@ import android.os.Build;
 import com.github.catvod.crawler.SpiderDebug;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -222,5 +223,38 @@ public class Misc {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static Matcher matcher(String regx, String content) {
+        Pattern pattern = Pattern.compile(regx);
+        return pattern.matcher(content);
+    }
+    public static String trim(String str) {
+        return str == null ? str : str.replaceAll("^[\\s　|\\s ]*|[\\s　|\\s ]*$", "");
+    }
+
+    public static String delHTMLTag(String htmlStr){
+        String regEx_html="<[^>]+>"; //定义HTML标签的正则表达式
+        Pattern p_html=Pattern.compile(regEx_html,Pattern.CASE_INSENSITIVE);
+        Matcher m_html=p_html.matcher(htmlStr);
+        htmlStr=m_html.replaceAll(""); //过滤html标签
+        htmlStr = htmlStr.replaceAll("&amp;|&nbsp;", " ");
+        return htmlStr.trim(); //返回文本字符串
+    }
+
+    public static ArrayList<String> subContent(String content, String startFlag, String endFlag) {
+        ArrayList<String> result = new ArrayList<>();
+        if (content != null && content.length() > 1) {
+            try {
+                Pattern pattern = Pattern.compile(startFlag + "(.*?)" + endFlag);
+                Matcher matcher = pattern.matcher(content);
+                while (matcher.find()) {
+                    result.add(matcher.group(1));
+                }
+            } catch (Throwable th) {
+                th.printStackTrace();
+            }
+        }
+        return result;
     }
 }
