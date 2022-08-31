@@ -529,7 +529,7 @@ public class PushAgent extends Spider {
                             String name = i+1+"";
                             vodItems.add(name + "$" + id);
                         }
-                        String playList = com.github.catvod.utils.TextUtils.join("#", vodItems);
+                        String playList = TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     }
                 } else {
@@ -567,7 +567,7 @@ public class PushAgent extends Spider {
                             vodItems.add(name + "$" + id);
                         }
                     }
-                    String playList = com.github.catvod.utils.TextUtils.join("#", vodItems);
+                    String playList = TextUtils.join("#", vodItems);
                     vodAtom.put("vod_play_url", playList);
                 } else {
                     vodAtom.put("vod_play_url", "立即播放$" + url);
@@ -601,7 +601,7 @@ public class PushAgent extends Spider {
                                 vodItems.add(VodName + "$" + VodId);
                             }
                         }
-                        String playList = com.github.catvod.utils.TextUtils.join("#", vodItems);
+                        String playList = TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     } else {
                         vodAtom.put("vod_play_url", "立即播放$" + url);
@@ -733,8 +733,8 @@ public class PushAgent extends Spider {
                         for (String key : m.keySet()) {
                             vodItems.add(m.get(key) + "$" + key);
                         }
-                        if(fb) playList.add(0, com.github.catvod.utils.TextUtils.join("#", vodItems));
-                        else playList.add(com.github.catvod.utils.TextUtils.join("#", vodItems));
+                        if(fb) playList.add(0, TextUtils.join("#", vodItems));
+                        else playList.add(TextUtils.join("#", vodItems));
                     }
                     ArrayList<String> playFrom = new ArrayList<>();
 
@@ -743,8 +743,8 @@ public class PushAgent extends Spider {
                         playFrom.add("嗅探列表" + (i + 1));
                     }
 
-                    String vod_play_from = com.github.catvod.utils.TextUtils.join("$$$", playFrom);
-                    String vod_play_url = com.github.catvod.utils.TextUtils.join("$$$", playList);
+                    String vod_play_from = TextUtils.join("$$$", playFrom);
+                    String vod_play_url = TextUtils.join("$$$", playList);
                     vodAtom.put("vod_play_from", vod_play_from);
                     vodAtom.put("vod_play_url", vod_play_url);
                 }else{
