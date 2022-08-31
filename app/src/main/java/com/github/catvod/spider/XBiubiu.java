@@ -167,7 +167,7 @@ public class XBiubiu extends Spider {
             fetchRule();
             String jiequshuzuqian = getRuleVal("bfjiequshuzuqian");
             boolean bfjiequshuzuqian = jiequshuzuqian.equals("");
-            if(bfjiequshuzuqian){
+            if(!bfjiequshuzuqian){
                 String[] idInfo = ids.get(0).split("\\$\\$\\$");
                 String webUrl = getRuleVal("url") + idInfo[0];
                 String html = fetch(webUrl);

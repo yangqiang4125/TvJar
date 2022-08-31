@@ -815,15 +815,10 @@ public class PushAgent extends Spider {
                     result.put("parse", 1);
                     result.put("jx", "1");
                     result.put("url", id);
+                    result.put("playUrl", "");
                     if(id.contains("bilibili")){
                         result.put("header", Misc.jHeaders(0,id).toString());
-                        String bili = fetchRule(false,0).optString("bili", "");
-                        if (!bili.equals("")) {
-                            result.put("playUrl", bili + id);
-                        }else
-                        result.put("playUrl", "");
-                    }
-                    else result.put("header", Misc.jHeaders(type,id).toString());
+                    } else result.put("header", Misc.jHeaders(type,id).toString());
                     return result.toString();
                 }
                 case "player": {
