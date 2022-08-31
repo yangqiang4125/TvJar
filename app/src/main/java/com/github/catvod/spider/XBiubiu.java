@@ -101,10 +101,11 @@ public class XBiubiu extends Spider {
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         try {
             fetchRule();
-            String webUrl = getRuleVal("url") + tid + pg + getRuleVal("houzhui");
+            String baseUrl = getRuleVal("url");
+            String webUrl = baseUrl + tid + pg + getRuleVal("houzhui");
             String html = fetch(webUrl);
             String parseContent = html;
-            boolean shifouercijiequ = getRuleVal("shifouercijiequ").equals("1");
+            boolean shifouercijiequ = getRuleVal("shifouercijiequ","1").equals("1");
             if (shifouercijiequ) {
                 String jiequqian = getRuleVal("jiequqian");
                 String jiequhou = getRuleVal("jiequhou");
@@ -132,7 +133,7 @@ public class XBiubiu extends Spider {
                     }
                 }
                 JSONObject v = new JSONObject();
-                v.put("vod_id", title + "$$$" + pic + "$$$" + link);
+                v.put("vod_id", baseUrl+link + "$$$" + pic + "$$$" + title);// v.put("vod_id", title + "$$$" + pic + "$$$" + link);
                 v.put("vod_name", title);
                 v.put("vod_pic", pic);
                 v.put("vod_remarks", mark);
@@ -169,7 +170,7 @@ public class XBiubiu extends Spider {
             boolean bfjiequshuzuqian = jiequshuzuqian.equals("");
             if(!bfjiequshuzuqian){
                 String[] idInfo = ids.get(0).split("\\$\\$\\$");
-                String webUrl = getRuleVal("url") + idInfo[0];
+                String webUrl = idInfo[0];
                 String html = fetch(webUrl);
                 String parseContent = html;
                 boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
