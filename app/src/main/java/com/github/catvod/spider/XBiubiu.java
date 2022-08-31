@@ -30,6 +30,7 @@ public class XBiubiu extends Spider {
 
     public void init(Context context, String extend) {
         pushAgent= new PushAgent();
+        pushAgent.init(context, "");
         super.init(context, extend);
         this.ext = extend;
     }

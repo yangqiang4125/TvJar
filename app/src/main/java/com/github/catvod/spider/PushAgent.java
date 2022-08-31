@@ -50,17 +50,19 @@ public class PushAgent extends Spider {
     }
 
     public void getToken(String token){
-        String[] arr = token.split(";");
-        if (arr.length > 0) {
-            token = arr[0];
-            if(arr.length>2){
-                String aid = arr[2];
-                if(Misc.isNumeric(aid)) type = Integer.valueOf(aid);
+        if(token!=null&&token.equals("")){
+            String[] arr = token.split(";");
+            if (arr.length > 0) {
+                token = arr[0];
+                if(arr.length>2){
+                    String aid = arr[2];
+                    if(Misc.isNumeric(aid)) type = Integer.valueOf(aid);
+                }
             }
+            if (token.startsWith("http")) {
+                Token = OkHttpUtil.string(token, null);
+            }else Token = token;
         }
-        if (token.startsWith("http")) {
-            Token = OkHttpUtil.string(token, null);
-        }else Token = token;
     }
 
     public JSONObject fetchRule(boolean flag,int t) {
