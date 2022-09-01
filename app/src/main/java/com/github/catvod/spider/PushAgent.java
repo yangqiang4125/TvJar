@@ -46,7 +46,7 @@ public class PushAgent extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        fetchRule(false,0);
+        if(extend!=null&&!extend.equals("")) getToken(Token);
     }
 
     public void getToken(String token){
