@@ -216,7 +216,7 @@ public class PushAgent extends Spider {
     }
 
 
-    private static void refreshTk() {
+    private void refreshTk() {
         long b = Time();
         String str = j;
         if (str.isEmpty() || StopRefresh - b <= 600) {
@@ -236,6 +236,7 @@ public class PushAgent extends Spider {
                 long j2 = jSONObject3.getLong("expires_in");
                 StopRefresh = b + j2;
             } catch (Exception e) {
+                fetchRule(false,0);
                 SpiderDebug.log(e);
             }
         }

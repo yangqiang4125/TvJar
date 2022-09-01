@@ -2,12 +2,13 @@ package com.github.catvod.spider;
 
 import android.content.Context;
 import android.text.TextUtils;
-
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
-
+import okhttp3.Call;
+import okhttp3.Cookie;
+import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,18 +18,8 @@ import org.jsoup.nodes.Document;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.Iterator;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 public class Bili extends Spider {
 
