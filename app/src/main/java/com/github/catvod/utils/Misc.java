@@ -257,4 +257,34 @@ public class Misc {
         }
         return result;
     }
+
+    public static ArrayList<String> subContent(String content, String startFlag, String endFlag) {
+        ArrayList<String> result = new ArrayList<>();
+        if (startFlag.isEmpty() && endFlag.isEmpty()) {
+            result.add(content);
+            return result;
+        }
+        try {
+            Pattern pattern = Pattern.compile(escapeExprSpecialWord(startFlag) + "(.*?)" + escapeExprSpecialWord(endFlag));
+            Matcher matcher = pattern.matcher(content);
+            while (matcher.find()) {
+                result.add(matcher.group(1));
+            }
+        } catch (Throwable th) {
+            th.printStackTrace();
+        }
+        return result;
+    }
+
+    public static String escapeExprSpecialWord(String regexStr) {
+        if (!regexStr.isEmpty()) {
+            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
+            for (String key : fbsArr) {
+                if (regexStr.contains(key)) {
+                    regexStr = regexStr.replace(key, "\\" + key);
+                }
+            }
+        }
+        return regexStr;
+    }
 }

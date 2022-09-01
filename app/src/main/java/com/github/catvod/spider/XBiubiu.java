@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import okhttp3.Call;
+import org.jsoup.Jsoup;
 
 public class XBiubiu extends Spider {
     private PushAgent pushAgent= null;
@@ -101,11 +102,20 @@ public class XBiubiu extends Spider {
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         try {
             fetchRule();
+            if (tid.equals("空"))
+                tid = "";
+            String qishiye = rule.optString("qishiye", "nil");
+            if (qishiye.equals("空"))
+                pg = "";
+            else if (!qishiye.equals("nil")) {
+                pg = String.valueOf(Integer.parseInt(pg) - 1 + Integer.parseInt(qishiye));
+            }
             String baseUrl = getRuleVal("url");
             String webUrl = baseUrl + tid + pg + getRuleVal("houzhui");
             String html = fetch(webUrl);
+            html = removeUnicode(html);
             String parseContent = html;
-            boolean shifouercijiequ = getRuleVal("shifouercijiequ","1").equals("1");
+            boolean shifouercijiequ = getRuleVal("shifouercijiequ").equals("1");
             if (shifouercijiequ) {
                 String jiequqian = getRuleVal("jiequqian");
                 String jiequhou = getRuleVal("jiequhou");
@@ -116,32 +126,30 @@ public class XBiubiu extends Spider {
             JSONArray videos = new JSONArray();
             ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
             for (int i = 0; i < jiequContents.size(); i++) {
-                //try {
-                String jiequContent = jiequContents.get(i);
-                String title = subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0);
-                String pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
-                pic = Misc.fixUrl(webUrl, pic);
-                String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
-                //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0);
-                //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                String mark = "";
-                if (!getRuleVal("gengxinqian").isEmpty() && !getRuleVal("gengxinhou").isEmpty()) {
-                    try {
-                        mark = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                    } catch (Exception e) {
-                        SpiderDebug.log(e);
+                try {
+                    String jiequContent = jiequContents.get(i);
+                    String title = removeHtml(subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0));
+                    String pic = "";
+                    String tupianqian = getRuleVal("tupianqian").toLowerCase();
+                    if (tupianqian.startsWith("http://") || tupianqian.startsWith("https://")) {
+                        pic = getRuleVal("tupianqian");
+                    } else {
+                        pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
                     }
+                    pic = Misc.fixUrl(webUrl, pic);
+                    String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
+                    link = getRuleVal("ljqianzhui").isEmpty() ? (link + getRuleVal("ljhouzhui")) : ("x:" + getRuleVal("ljqianzhui")) + link + getRuleVal("ljhouzhui");
+                    String remark = !getRuleVal("fubiaotiqian").isEmpty() && !getRuleVal("fubiaotihou").isEmpty() ?
+                            removeHtml(subContent(jiequContent, getRuleVal("fubiaotiqian"), getRuleVal("fubiaotihou")).get(0)) : "";
+                    JSONObject v = new JSONObject();
+                    v.put("vod_id", baseUrl+link + "$$$" + pic + "$$$" + title);
+                    v.put("vod_name", title);
+                    v.put("vod_pic", pic);
+                    v.put("vod_remarks", remark);
+                    videos.put(v);
+                } catch (Throwable th) {
+                    th.printStackTrace();
                 }
-                JSONObject v = new JSONObject();
-                v.put("vod_id", baseUrl+link + "$$$" + pic + "$$$" + title);// v.put("vod_id", title + "$$$" + pic + "$$$" + link);
-                v.put("vod_name", title);
-                v.put("vod_pic", pic);
-                v.put("vod_remarks", mark);
-                videos.put(v);
-                //} catch (Throwable th) {
-                //th.printStackTrace();
-                //break;
-                //}
             }
             JSONObject result = new JSONObject();
             result.put("page", pg);
@@ -155,7 +163,21 @@ public class XBiubiu extends Spider {
         }
         return null;
     }
+    private static String removeUnicode(String str) {
+        Pattern pattern = Pattern.compile("(\\\\u(\\w{4}))");
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String full = matcher.group(1);
+            String ucode = matcher.group(2);
+            char c = (char) Integer.parseInt(ucode, 16);
+            str = str.replace(full, c + "");
+        }
+        return str;
+    }
 
+    String removeHtml(String text) {
+        return Jsoup.parse(text).text();
+    }
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         JSONObject obj = category(tid, pg, filter, extend);
@@ -429,16 +451,28 @@ public class XBiubiu extends Spider {
     }
 
     private ArrayList<String> subContent(String content, String startFlag, String endFlag) {
-        ArrayList<String> result = new ArrayList<>();
-        try {
-            Pattern pattern = Pattern.compile(startFlag + "(.*?)" + endFlag);
-            Matcher matcher = pattern.matcher(content);
-            while (matcher.find()) {
-                result.add(matcher.group(1));
-            }
-        } catch (Throwable th) {
-            th.printStackTrace();
+        return Misc.subContent(content,startFlag,endFlag);
+    }
+
+    //修复软件不支持的格式无法嗅探的问题
+    @Override
+    public boolean manualVideoCheck() {
+        return true;
+    }
+
+    private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"};
+
+    @Override
+    public boolean isVideoFormat(String url) {
+        url = url.toLowerCase();
+        if (url.contains("=http") || url.contains("=https%3a%2f") || url.contains("=http%3a%2f")) {
+            return false;
         }
-        return result;
+        for (String format : videoFormatList) {
+            if (url.contains(format)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
