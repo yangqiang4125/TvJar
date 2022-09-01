@@ -201,6 +201,7 @@ public class PushAgent extends Spider {
 
     }
 
+
     private static HashMap<String, String> Headers() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36");
@@ -216,7 +217,7 @@ public class PushAgent extends Spider {
     }
 
 
-    private void refreshTk() {
+    private static void refreshTk() {
         long b = Time();
         String str = j;
         if (str.isEmpty() || StopRefresh - b <= 600) {
@@ -236,11 +237,11 @@ public class PushAgent extends Spider {
                 long j2 = jSONObject3.getLong("expires_in");
                 StopRefresh = b + j2;
             } catch (Exception e) {
-                fetchRule(false,0);
                 SpiderDebug.log(e);
             }
         }
     }
+
 
     private static String VideoDetail(String shareid, String token, String fileid) {
         int i;
@@ -356,9 +357,8 @@ public class PushAgent extends Spider {
                             if (replace.length() > 20) {
                                 replace = replace.substring(0, 10) + "..." + replace.substring(replace.length() - 10);
                             }
-                            String category = jSONObject3.getString("category");
                             String fileIds = jSONObject3.getString("file_id");
-                            map.put(replace, str + "+" + str2 + "+" + fileIds+ "+" + category);
+                            map.put(replace, str + "+" + str2 + "+" + fileIds);
                         }
                     }
                     i2++;
@@ -379,7 +379,7 @@ public class PushAgent extends Spider {
         }
     }
 
-    public String getAliContent(List<String> list,JSONObject jSONObject6) {
+    public String getAliContent(List<String> list,String pic,JSONObject jSONObject6) {
         String str;
         try {
             String url = list.get(0).trim();
@@ -432,7 +432,7 @@ public class PushAgent extends Spider {
             jSONObject6.put("vod_id", url);
             String string3 = jSONObject3.getString("share_name");
             jSONObject6.put("vod_name", string3);
-            jSONObject6.put("vod_play_from", "AliYun$$$原画");
+            jSONObject6.put("vod_play_from", "AliYun");
             ArrayList arrayList = new ArrayList();
             String string4 = jSONObject4.getString("type");
             if (!string4.equals("folder")) {
@@ -463,9 +463,7 @@ public class PushAgent extends Spider {
             ArrayList arrayList3 = new ArrayList();
             for (int i2 = 0; i2 < 4; i2++) {
                 String join = TextUtils.join("#", arrayList);
-                String join4 = TextUtils.join("#", arrayList);
                 arrayList3.add(join);
-                arrayList3.add(join4);
             }
             String join2 = TextUtils.join("$$$", arrayList3);
             jSONObject6.put("vod_play_url", join2);
@@ -630,7 +628,7 @@ public class PushAgent extends Spider {
                 result.put("list", lists);
                 return result.toString();
             } else if (url.startsWith("http") && (matcher2.find())) {
-                return getAliContent(list,vodAtom);
+                return getAliContent(list,pic,vodAtom);
             } else if (url.startsWith("http") && (!matcher.find()) && (!matcher2.find())) {
                 Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
@@ -835,23 +833,6 @@ public class PushAgent extends Spider {
                     result.put("url", url);
                     result.put("header", "");
                     return result.toString();
-                case "原画": {
-                    refreshTk();
-                    split = id.split("\\+");
-                    String DownLoadUrl = downLoadUrl(split[0], split[1], split[2], split[3]);
-                    HashMap hashMap = new HashMap();
-                    OkHttpUtil.stringNoRedirect(DownLoadUrl,Headers(),hashMap);
-                    url= OkHttpUtil.getRedirectLocation(hashMap);
-                    JSONObject jSONObject4 = new JSONObject();
-                    jSONObject4.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36");
-                    jSONObject4.put("Referer", "https://www.aliyundrive.com/");
-                    JSONObject jSONObject = new JSONObject();
-                    jSONObject.put("parse", "0");
-                    jSONObject.put("playUrl", "");
-                    jSONObject.put("url", url);
-                    jSONObject.put("header",jSONObject4.toString());
-                    return jSONObject.toString();
-                }
             }
             if(flag.startsWith("嗅探")){
                 result.put("parse", 1);
@@ -867,58 +848,4 @@ public class PushAgent extends Spider {
         return "";
     }
 
-    private static String downLoadUrl(String shareid, String token, String fileid, String type) {
-        try {
-            HashMap<String, String> z = Headers();
-            z.put("x-share-token", token);
-            z.put("authorization", j);
-            if (type.equals("video")) {
-                JSONObject jSONObject = new JSONObject();
-                jSONObject.put("share_id", shareid);
-                jSONObject.put("category", "live_transcoding");
-                jSONObject.put("file_id", fileid);
-                jSONObject.put("template_id", "");
-                JSONObject jSONObject2 = new JSONObject(Post("https://api.aliyundrive.com/v2/file/get_share_link_video_preview_play_info", jSONObject.toString(), z));
-                shareid = jSONObject2.getString("share_id");
-                fileid = jSONObject2.getString("file_id");
-            }
-            JSONObject jSONObject3 = new JSONObject();
-            if (type.equals("video")) {
-                jSONObject3.put("expire_sec", 600);
-                jSONObject3.put("file_id", fileid);
-                jSONObject3.put("share_id", shareid);
-            }
-            if (type.equals("audio")) {
-                jSONObject3.put("share_id", shareid);
-                jSONObject3.put("get_audio_play_info", true);
-                jSONObject3.put("file_id", fileid);
-            }
-            return new JSONObject(Post("https://api.aliyundrive.com/v2/file/get_share_link_download_url", jSONObject3.toString(), z)).getString("download_url");
-        } catch (Exception e) {
-            SpiderDebug.log(e);
-            return "";
-        }
-    }
-
-    //修复软件不支持的格式无法嗅探的问题
-    @Override
-    public boolean manualVideoCheck() {
-        return true;
-    }
-
-    private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"};
-
-    @Override
-    public boolean isVideoFormat(String url) {
-        url = url.toLowerCase();
-        if (url.contains("=http") || url.contains("=https%3a%2f") || url.contains("=http%3a%2f")) {
-            return false;
-        }
-        for (String format : videoFormatList) {
-            if (url.contains(format)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
