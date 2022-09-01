@@ -1,7 +1,6 @@
 package com.github.catvod.utils.okhttp;
 
 import com.github.catvod.crawler.SpiderDebug;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ public class OkHttpUtil {
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
 
-    public static final int DEFAULT_TIMEOUT = 20;
+    private static final int DEFAULT_TIMEOUT = 25;
 
     private static final Object lockO = new Object();
 
@@ -60,6 +59,14 @@ public class OkHttpUtil {
     }
 
     public static String string(OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, Map<String, List<String>> respHeaderMap) {
+        return req(METHOD_GET, client, url, tag, paramsMap, headerMap, respHeaderMap);
+    }
+
+    public static String stringPost(OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, Map<String, List<String>> respHeaderMap) {
+        return req(METHOD_POST, client, url, tag, paramsMap, headerMap, respHeaderMap);
+    }
+
+    public static String req(String reqType,OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, Map<String, List<String>> respHeaderMap) {
         OKCallBack<String> stringCallback = new OKCallBack<String>() {
             @Override
             public String onParseResponse(Call call, Response response) {
@@ -84,7 +91,7 @@ public class OkHttpUtil {
             public void onResponse(String response) {
             }
         };
-        OKRequest req = new OKRequest(METHOD_GET, url, paramsMap, headerMap, stringCallback);
+        OKRequest req = new OKRequest(reqType, url, paramsMap, headerMap, stringCallback);
         req.setTag(tag);
         req.execute(client);
         return stringCallback.getResult();
@@ -164,7 +171,7 @@ public class OkHttpUtil {
     public static void cancel(Object tag) {
         cancel(defaultClient(), tag);
     }
-    
+
     public static void cancelAll() {
         cancelAll(defaultClient());
     }
