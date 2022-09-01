@@ -1,18 +1,12 @@
 package com.github.catvod.utils.okhttp;
 
 import com.github.catvod.crawler.SpiderDebug;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
@@ -21,7 +15,7 @@ public class OkHttpUtil {
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
 
-    private static final int DEFAULT_TIMEOUT = 15;
+    private static final int DEFAULT_TIMEOUT = 25;
 
     private static final Object lockO = new Object();
 
@@ -32,24 +26,10 @@ public class OkHttpUtil {
      */
     private static OkHttpClient noRedirectClient = null;
 
-    public static HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
-
     public static OkHttpClient defaultClient() {
         synchronized (lockO) {
             if (defaultClient == null) {
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                        .cookieJar(new CookieJar() {
-                            @Override
-                            public void saveFromResponse(HttpUrl httpUrl, List<Cookie> list) {
-                                cookieStore.put(httpUrl.host(), list);
-                            }
-
-                            @Override
-                            public List<Cookie> loadForRequest(HttpUrl httpUrl) {
-                                List<Cookie> cookies = cookieStore.get(httpUrl.host());
-                                return cookies != null ? cookies : new ArrayList<>();
-                            }
-                        })
                         .readTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                         .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                         .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
@@ -79,6 +59,14 @@ public class OkHttpUtil {
     }
 
     public static String string(OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, Map<String, List<String>> respHeaderMap) {
+        return req(METHOD_GET, client, url, tag, paramsMap, headerMap, respHeaderMap);
+    }
+
+    public static String stringPost(OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, Map<String, List<String>> respHeaderMap) {
+        return req(METHOD_POST, client, url, tag, paramsMap, headerMap, respHeaderMap);
+    }
+
+    public static String req(String reqType,OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, Map<String, List<String>> respHeaderMap) {
         OKCallBack<String> stringCallback = new OKCallBack<String>() {
             @Override
             public String onParseResponse(Call call, Response response) {
@@ -103,7 +91,7 @@ public class OkHttpUtil {
             public void onResponse(String response) {
             }
         };
-        OKRequest req = new OKRequest(METHOD_GET, url, paramsMap, headerMap, stringCallback);
+        OKRequest req = new OKRequest(reqType, url, paramsMap, headerMap, stringCallback);
         req.setTag(tag);
         req.execute(client);
         return stringCallback.getResult();
