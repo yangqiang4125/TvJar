@@ -46,13 +46,23 @@ public class PushAgent extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        fetchRule(false,0);
+        getToken(Token);
     }
 
     public void getToken(String token){
-        if (token.startsWith("http")) {
-            Token = OkHttpUtil.string(token, null);
-        }else Token = token;
+        if(token!=null&&token.equals("")){
+            String[] arr = token.split(";");
+            if (arr.length > 0) {
+                token = arr[0];
+                if(arr.length>2){
+                    String aid = arr[2];
+                    if(Misc.isNumeric(aid)) type = Integer.valueOf(aid);
+                }
+            }
+            if (token.startsWith("http")) {
+                Token = OkHttpUtil.string(token, null);
+            }else Token = token;
+        }
     }
 
     public JSONObject fetchRule(boolean flag,int t) {
@@ -71,7 +81,6 @@ public class PushAgent extends Spider {
                     if(!tk.equals("")){
                         getToken(tk);
                     }
-                    type = siteRule.optInt("ua", 1);
                 }
                 return jo;
             }
@@ -767,11 +776,8 @@ public class PushAgent extends Spider {
             ArrayList<String> aslist = new ArrayList<>();
             String director = "",actor = "",desc = "";
             String directorRegx = "导演：</span>",actorRegx = "主演：</span>",descRegx = "简介：</span>";
-            if (!Misc.matcher(descRegx, content).find()) {
-                return vodAtom;
-            }
             boolean fb = true;
-            if (!Misc.matcher(actorRegx, content).find()) {
+            if (!Misc.matcher("actorRegx", content).find()) {
                 fb=false;
                 actorRegx = "主演：";
                 directorRegx = "导演：";
