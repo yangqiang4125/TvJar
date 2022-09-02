@@ -16,7 +16,7 @@ public class OkHttpUtil {
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
 
-    private static final int DEFAULT_TIMEOUT = 25;
+    public static final int DEFAULT_TIMEOUT = 20;
 
     private static final Object lockO = new Object();
 
@@ -164,7 +164,7 @@ public class OkHttpUtil {
     public static void cancel(Object tag) {
         cancel(defaultClient(), tag);
     }
-
+    
     public static void cancelAll() {
         cancelAll(defaultClient());
     }
