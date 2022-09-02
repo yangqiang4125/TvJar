@@ -20,15 +20,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import okhttp3.Call;
+import org.jsoup.Jsoup;
 
 public class XBiubiu extends Spider {
-
+    private PushAgent pushAgent= null;
     @Override
     public void init(Context context) {
         super.init(context);
     }
 
     public void init(Context context, String extend) {
+        pushAgent= new PushAgent();
+        pushAgent.init(context, "");
         super.init(context, extend);
         this.ext = extend;
     }
@@ -99,8 +102,18 @@ public class XBiubiu extends Spider {
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         try {
             fetchRule();
-            String webUrl = getRuleVal("url") + tid + pg + getRuleVal("houzhui");
+            if (tid.equals("空"))
+                tid = "";
+            String qishiye = rule.optString("qishiye", "nil");
+            if (qishiye.equals("空"))
+                pg = "";
+            else if (!qishiye.equals("nil")) {
+                pg = String.valueOf(Integer.parseInt(pg) - 1 + Integer.parseInt(qishiye));
+            }
+            String baseUrl = getRuleVal("url");
+            String webUrl = baseUrl + tid + pg + getRuleVal("houzhui");
             String html = fetch(webUrl);
+            html = removeUnicode(html);
             String parseContent = html;
             boolean shifouercijiequ = getRuleVal("shifouercijiequ").equals("1");
             if (shifouercijiequ) {
@@ -113,40 +126,35 @@ public class XBiubiu extends Spider {
             JSONArray videos = new JSONArray();
             ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
             for (int i = 0; i < jiequContents.size(); i++) {
-                //try {
-                String jiequContent = jiequContents.get(i);
-                String title = subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0);
-                String pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
-                pic = Misc.fixUrl(webUrl, pic);
-                String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
-                //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0);
-                //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                String mark = "";
-                if (!getRuleVal("gengxinqian").isEmpty() && !getRuleVal("gengxinhou").isEmpty()) {
-                    try {
-                        mark = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                    } catch (Exception e) {
-                        SpiderDebug.log(e);
+                try {
+                    String jiequContent = jiequContents.get(i);
+                    String title = removeHtml(subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0));
+                    String pic = "";
+                    String tupianqian = getRuleVal("tupianqian").toLowerCase();
+                    if (tupianqian.startsWith("http://") || tupianqian.startsWith("https://")) {
+                        pic = getRuleVal("tupianqian");
+                    } else {
+                        pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
                     }
+                    pic = Misc.fixUrl(webUrl, pic);
+                    String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
+                    link = getRuleVal("ljqianzhui").isEmpty() ? (link + getRuleVal("ljhouzhui")) : ("x:" + getRuleVal("ljqianzhui")) + link + getRuleVal("ljhouzhui");
+                    String remark = !getRuleVal("fubiaotiqian").isEmpty() && !getRuleVal("fubiaotihou").isEmpty() ?
+                            removeHtml(subContent(jiequContent, getRuleVal("fubiaotiqian"), getRuleVal("fubiaotihou")).get(0)) : "";
+                    JSONObject v = new JSONObject();
+                    v.put("vod_id", baseUrl+link + "$$$" + pic + "$$$" + title);
+                    v.put("vod_name", title);
+                    v.put("vod_pic", pic);
+                    v.put("vod_remarks", remark);
+                    videos.put(v);
+                } catch (Throwable th) {
+                    th.printStackTrace();
                 }
-                JSONObject v = new JSONObject();
-                v.put("vod_id", title + "$$$" + pic + "$$$" + link);
-                v.put("vod_name", title);
-                v.put("vod_pic", pic);
-                v.put("vod_remarks", mark);
-                videos.put(v);
-                //} catch (Throwable th) {
-                //th.printStackTrace();
-                //break;
-                //}
             }
             JSONObject result = new JSONObject();
-            int limit = 20;
-            int page = Integer.parseInt(pg);
-            result.put("page", page);
-            int pageCount = videos.length() == limit ? page + 1 : page;
-            result.put("pagecount", pageCount);
-            result.put("limit", limit);
+            result.put("page", pg);
+            result.put("pagecount", Integer.MAX_VALUE);
+            result.put("limit", 90);
             result.put("total", Integer.MAX_VALUE);
             result.put("list", videos);
             return result;
@@ -155,7 +163,21 @@ public class XBiubiu extends Spider {
         }
         return null;
     }
+    private static String removeUnicode(String str) {
+        Pattern pattern = Pattern.compile("(\\\\u(\\w{4}))");
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String full = matcher.group(1);
+            String ucode = matcher.group(2);
+            char c = (char) Integer.parseInt(ucode, 16);
+            str = str.replace(full, c + "");
+        }
+        return str;
+    }
 
+    String removeHtml(String text) {
+        return Jsoup.parse(text).text();
+    }
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         JSONObject obj = category(tid, pg, filter, extend);
@@ -166,123 +188,128 @@ public class XBiubiu extends Spider {
     public String detailContent(List<String> ids) {
         try {
             fetchRule();
-            String[] idInfo = ids.get(0).split("\\$\\$\\$");
-            String webUrl = getRuleVal("url") + idInfo[2];
-            String html = fetch(webUrl);
-            String parseContent = html;
-            boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
-            if (bfshifouercijiequ) {
-                String jiequqian = getRuleVal("bfjiequqian");
-                String jiequhou = getRuleVal("bfjiequhou");
-                parseContent = subContent(html, jiequqian, jiequhou).get(0);
-            }
-
-            ArrayList<String> playList = new ArrayList<>();
-
             String jiequshuzuqian = getRuleVal("bfjiequshuzuqian");
-            String jiequshuzuhou = getRuleVal("bfjiequshuzuhou");
-            boolean bfyshifouercijiequ = getRuleVal("bfyshifouercijiequ").equals("1");
-            ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
-            for (int i = 0; i < jiequContents.size(); i++) {
-                try {
-                    String jiequContent = jiequContents.get(i);
-                    String parseJqContent = bfyshifouercijiequ ? subContent(jiequContent, getRuleVal("bfyjiequqian"), getRuleVal("bfyjiequhou")).get(0) : jiequContent;
-                    ArrayList<String> lastParseContents = subContent(parseJqContent, getRuleVal("bfyjiequshuzuqian"), getRuleVal("bfyjiequshuzuhou"));
-                    List<String> vodItems = new ArrayList<>();
-                    for (int j = 0; j < lastParseContents.size(); j++) {
-                        String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
-                        String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
-                        vodItems.add(title + "$" + link);
+            boolean bfjiequshuzuqian = jiequshuzuqian.equals("");
+            if(!bfjiequshuzuqian){
+                String[] idInfo = ids.get(0).split("\\$\\$\\$");
+                String webUrl = idInfo[0];
+                String html = fetch(webUrl);
+                String parseContent = html;
+                boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
+                if (bfshifouercijiequ) {
+                    String jiequqian = getRuleVal("bfjiequqian");
+                    String jiequhou = getRuleVal("bfjiequhou");
+                    parseContent = subContent(html, jiequqian, jiequhou).get(0);
+                }
+
+                ArrayList<String> playList = new ArrayList<>();
+
+
+                String jiequshuzuhou = getRuleVal("bfjiequshuzuhou");
+                boolean bfyshifouercijiequ = getRuleVal("bfyshifouercijiequ").equals("1");
+                ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
+                for (int i = 0; i < jiequContents.size(); i++) {
+                    try {
+                        String jiequContent = jiequContents.get(i);
+                        String parseJqContent = bfyshifouercijiequ ? subContent(jiequContent, getRuleVal("bfyjiequqian"), getRuleVal("bfyjiequhou")).get(0) : jiequContent;
+                        ArrayList<String> lastParseContents = subContent(parseJqContent, getRuleVal("bfyjiequshuzuqian"), getRuleVal("bfyjiequshuzuhou"));
+                        List<String> vodItems = new ArrayList<>();
+                        for (int j = 0; j < lastParseContents.size(); j++) {
+                            String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
+                            String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
+                            vodItems.add(title + "$" + link);
+                        }
+                        playList.add(0, android.text.TextUtils.join("#", vodItems));
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                        break;
                     }
-                    playList.add(0, TextUtils.join("#", vodItems));
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                    break;
                 }
-            }
 
-            String cover = idInfo[1], title = idInfo[0], area = "";
-            String director = "";
-            String actor = "";
-            String desc = "";
-            String remark = "";
-            String year = "";
-            String category = "";
+                String cover = idInfo[1], title = idInfo[2], area = "";
+                String director = "";
+                String actor = "";
+                String desc = "";
+                String remark = "";
+                String year = "";
+                String category = "";
 
-            if (!getRuleVal("leixinqian").isEmpty() && !getRuleVal("leixinhou").isEmpty()) {
-                try {
-                    category = subContent(html, getRuleVal("leixinqian"), getRuleVal("leixinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("niandaiqian").isEmpty() && !getRuleVal("niandaihou").isEmpty()) {
-                try {
-                    year = subContent(html, getRuleVal("niandaiqian"), getRuleVal("niandaihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("zhuangtaiqian").isEmpty() && !getRuleVal("zhuangtaihou").isEmpty()) {
-                try {
-                    remark = subContent(html, getRuleVal("zhuangtaiqian"), getRuleVal("zhuangtaihou")).get(0);
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("zhuyanqian").isEmpty() && !getRuleVal("zhuyanhou").isEmpty()) {
-                try {
-                    actor = subContent(html, getRuleVal("zhuyanqian"), getRuleVal("zhuyanhou")).get(0).replaceAll("\\s+", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("daoyanqian").isEmpty() && !getRuleVal("daoyanhou").isEmpty()) {
-                try {
-                    director = subContent(html, getRuleVal("daoyanqian"), getRuleVal("daoyanhou")).get(0).replaceAll("\\s+", "");
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
-                }
-            }
-            if (!getRuleVal("juqingqian").isEmpty() && !getRuleVal("juqinghou").isEmpty()) {
-                try {
-                    desc = subContent(html, getRuleVal("juqingqian"), getRuleVal("juqinghou")).get(0);
-                    if(desc!=null){
-                        desc = desc.replace("\t", "");
-                        desc = desc.replaceAll("\\.*>(.*)", "$1");
+                if (!getRuleVal("leixinqian").isEmpty() && !getRuleVal("leixinhou").isEmpty()) {
+                    try {
+                        category = subContent(html, getRuleVal("leixinqian"), getRuleVal("leixinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
                     }
-                } catch (Exception e) {
-                    SpiderDebug.log(e);
                 }
-            }
-            JSONObject vod = new JSONObject();
-            vod.put("vod_id", ids.get(0));
-            vod.put("vod_name", title);
-            vod.put("vod_pic", cover);
-            vod.put("type_name", category);
-            vod.put("vod_year", year);
-            vod.put("vod_area", area);
-            vod.put("vod_remarks", remark);
-            vod.put("vod_actor", actor);
-            vod.put("vod_director", director);
-            vod.put("vod_content", desc);
+                if (!getRuleVal("niandaiqian").isEmpty() && !getRuleVal("niandaihou").isEmpty()) {
+                    try {
+                        year = subContent(html, getRuleVal("niandaiqian"), getRuleVal("niandaihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("zhuangtaiqian").isEmpty() && !getRuleVal("zhuangtaihou").isEmpty()) {
+                    try {
+                        remark = subContent(html, getRuleVal("zhuangtaiqian"), getRuleVal("zhuangtaihou")).get(0);
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("zhuyanqian").isEmpty() && !getRuleVal("zhuyanhou").isEmpty()) {
+                    try {
+                        actor = subContent(html, getRuleVal("zhuyanqian"), getRuleVal("zhuyanhou")).get(0).replaceAll("\\s+", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("daoyanqian").isEmpty() && !getRuleVal("daoyanhou").isEmpty()) {
+                    try {
+                        director = subContent(html, getRuleVal("daoyanqian"), getRuleVal("daoyanhou")).get(0).replaceAll("\\s+", "");
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
+                if (!getRuleVal("juqingqian").isEmpty() && !getRuleVal("juqinghou").isEmpty()) {
+                    try {
+                        desc = subContent(html, getRuleVal("juqingqian"), getRuleVal("juqinghou")).get(0);
+                        if(desc!=null){
+                            desc = desc.replace("\t", "");
+                            desc = desc.replaceAll("\\.*>(.*)", "$1");
+                        }
+                    } catch (Exception e) {
+                        SpiderDebug.log(e);
+                    }
+                }
 
-            ArrayList<String> playFrom = new ArrayList<>();
+                JSONObject vod = new JSONObject();
+                vod.put("vod_id", ids.get(0));
+                vod.put("vod_name", title);
+                vod.put("vod_pic", cover);
+                vod.put("type_name", category);
+                vod.put("vod_year", year);
+                vod.put("vod_area", area);
+                vod.put("vod_remarks", remark);
+                vod.put("vod_actor", actor);
+                vod.put("vod_director", director);
+                vod.put("vod_content", desc);
 
-            for (int i = 0; i < playList.size(); i++) {
-                playFrom.add("播放列表" + (i + 1));
-            }
+                ArrayList<String> playFrom = new ArrayList<>();
 
-            String vod_play_from = TextUtils.join("$$$", playFrom);
-            String vod_play_url = TextUtils.join("$$$", playList);
-            vod.put("vod_play_from", vod_play_from);
-            vod.put("vod_play_url", vod_play_url);
+                for (int i = 0; i < playList.size(); i++) {
+                    playFrom.add("播放列表" + (i + 1));
+                }
 
-            JSONObject result = new JSONObject();
-            JSONArray list = new JSONArray();
-            list.put(vod);
-            result.put("list", list);
-            return result.toString();
+                String vod_play_from = android.text.TextUtils.join("$$$", playFrom);
+                String vod_play_url = TextUtils.join("$$$", playList);
+                vod.put("vod_play_from", vod_play_from);
+                vod.put("vod_play_url", vod_play_url);
+
+                JSONObject result = new JSONObject();
+                JSONArray list = new JSONArray();
+                list.put(vod);
+                result.put("list", list);
+                return result.toString();
+            } else return pushAgent.detailContent(ids);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }
@@ -424,16 +451,28 @@ public class XBiubiu extends Spider {
     }
 
     private ArrayList<String> subContent(String content, String startFlag, String endFlag) {
-        ArrayList<String> result = new ArrayList<>();
-        try {
-            Pattern pattern = Pattern.compile(startFlag + "(.*?)" + endFlag);
-            Matcher matcher = pattern.matcher(content);
-            while (matcher.find()) {
-                result.add(matcher.group(1));
-            }
-        } catch (Throwable th) {
-            th.printStackTrace();
+        return Misc.subContent(content,startFlag,endFlag);
+    }
+
+    //修复软件不支持的格式无法嗅探的问题
+    @Override
+    public boolean manualVideoCheck() {
+        return true;
+    }
+
+    private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"};
+
+    @Override
+    public boolean isVideoFormat(String url) {
+        url = url.toLowerCase();
+        if (url.contains("=http") || url.contains("=https%3a%2f") || url.contains("=http%3a%2f")) {
+            return false;
         }
-        return result;
+        for (String format : videoFormatList) {
+            if (url.contains(format)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
