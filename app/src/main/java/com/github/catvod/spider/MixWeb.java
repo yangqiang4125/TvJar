@@ -1,4 +1,4 @@
-package com.github.catvod.parser;
+package com.github.catvod.spider;
 
 import android.util.Base64;
 import com.github.catvod.crawler.SpiderDebug;
