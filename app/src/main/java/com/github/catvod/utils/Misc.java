@@ -4,12 +4,13 @@ import android.os.Build;
 import com.github.catvod.crawler.SpiderDebug;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 public class Misc {
     public static final String UaWinChrome = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
     public static final String DeAgent = "Dalvik/2.1.0 (Linux; U; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + " Build/" + Build.ID + ")";
@@ -51,7 +52,7 @@ public class Misc {
             if(type==0){
                 headers.put("User-Agent", UaWinChrome);
             }else  headers.put("User-Agent", MoAgent);
-
+            headers.put("Accept", " */*");
             headers.put("Connection", " Keep-Alive");
             if (url != null) {
                 headers.put("Referer", " " +url);
@@ -77,25 +78,35 @@ public class Misc {
         return Headers(type,null);
     }
 
-    public static String getWebName(String url){
+    public static String getWebName(String url,int type){
         if (url.contains("mgtv.com")) {
-            return "芒果TV";
+            if(type==0) return "芒果TV";
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/mgtv.jpg";
         }
         if (url.contains("qq.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/qq.jpg";
             return "腾讯视频";
         }
         if (url.contains("iqiyi.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/iqiyi.jpg";
             return "爱奇艺";
         }
+        if (url.contains("youku.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/youku.jpg";
+            return "优酷";
+        }
         if (url.contains("bilibili.com")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/bili.jpg";
             return "哗哩哔哩";
         }
         if (url.startsWith("magnet")) {
             return "磁力";
         }
         if (url.contains("aliyundrive")) {
+            if(type==1) return "http://image.xinjun58.com/sp/pic/bg/ali.jpg";
             return "阿里云";
         }
+        if(type==1)return "http://image.xinjun58.com/sp/pic/bg/zl.jpg";
         String host = Uri.parse(url).getHost();
         return host;
     }
@@ -212,5 +223,52 @@ public class Misc {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static Matcher matcher(String regx, String content) {
+        Pattern pattern = Pattern.compile(regx);
+        return pattern.matcher(content);
+    }
+    public static String trim(String str) {
+        return str == null ? str : str.replaceAll("^[\\s　|\\s ]*|[\\s　|\\s ]*$", "");
+    }
+
+    public static String delHTMLTag(String htmlStr){
+        String regEx_html="<[^>]+>"; //定义HTML标签的正则表达式
+        Pattern p_html=Pattern.compile(regEx_html,Pattern.CASE_INSENSITIVE);
+        Matcher m_html=p_html.matcher(htmlStr);
+        htmlStr=m_html.replaceAll(""); //过滤html标签
+        htmlStr = htmlStr.replaceAll("&amp;|&nbsp;", " ");
+        return htmlStr.trim(); //返回文本字符串
+    }
+
+    public static ArrayList<String> subContent(String content, String startFlag, String endFlag) {
+        ArrayList<String> result = new ArrayList<>();
+        if (startFlag.isEmpty() && endFlag.isEmpty()) {
+            result.add(content);
+            return result;
+        }
+        try {
+            Pattern pattern = Pattern.compile(escapeExprSpecialWord(startFlag) + "(.*?)" + escapeExprSpecialWord(endFlag));
+            Matcher matcher = pattern.matcher(content);
+            while (matcher.find()) {
+                result.add(matcher.group(1));
+            }
+        } catch (Throwable th) {
+            th.printStackTrace();
+        }
+        return result;
+    }
+
+    public static String escapeExprSpecialWord(String regexStr) {
+        if (!regexStr.isEmpty()) {
+            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
+            for (String key : fbsArr) {
+                if (regexStr.contains(key)) {
+                    regexStr = regexStr.replace(key, "\\" + key);
+                }
+            }
+        }
+        return regexStr;
     }
 }

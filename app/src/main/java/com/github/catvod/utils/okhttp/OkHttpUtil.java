@@ -164,7 +164,7 @@ public class OkHttpUtil {
     public static void cancel(Object tag) {
         cancel(defaultClient(), tag);
     }
-
+    
     public static void cancelAll() {
         cancelAll(defaultClient());
     }
