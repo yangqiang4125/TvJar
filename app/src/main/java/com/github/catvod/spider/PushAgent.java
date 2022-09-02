@@ -432,7 +432,7 @@ public class PushAgent extends Spider {
             jSONObject6.put("vod_id", url);
             String string3 = jSONObject3.getString("share_name");
             jSONObject6.put("vod_name", string3);
-            jSONObject6.put("vod_play_from", "AliYun$$$原画");
+            jSONObject6.put("vod_play_from", "4K原画$$$AliYun");
             ArrayList arrayList = new ArrayList();
             String string4 = jSONObject4.getString("type");
             if (!string4.equals("folder")) {
@@ -835,7 +835,7 @@ public class PushAgent extends Spider {
                     result.put("url", url);
                     result.put("header", "");
                     return result.toString();
-                case "原画": {
+                case "4K原画": {
                     refreshTk();
                     split = id.split("\\+");
                     String DownLoadUrl = downLoadUrl(split[0], split[1], split[2], split[3]);
