@@ -23,7 +23,7 @@ import okhttp3.Call;
 import org.jsoup.Jsoup;
 
 public class XBiubiu extends Spider {
-    private PushAgent pushAgent= null;
+    private static PushAgent pushAgent= null;
     @Override
     public void init(Context context) {
         super.init(context);

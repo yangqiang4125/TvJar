@@ -22,15 +22,16 @@ public class PushAgentQQ extends Spider {
     public void init(Context context, String extend) {
         super.init(context, extend);
         pushAgent = new PushAgent();
-        pushAgent.init(context, extend);
         if (extend != null) {
             if (!extend.startsWith("http")) {
                 String[] arr = extend.split(";");
                 this.ext = arr[1];
+                pushAgent.jsonUrl = arr[1];
             }else {
                 this.ext = extend;
             }
         }
+        pushAgent.init(context, extend);
     }
 
     @Override

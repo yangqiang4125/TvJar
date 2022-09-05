@@ -49,13 +49,13 @@ public class PushAgent extends Spider {
         fetchRule(false,0);
     }
 
-    public void getToken(String token){
+    public static void getToken(String token){
         if (token.startsWith("http")) {
             Token = OkHttpUtil.string(token, null);
         }else Token = token;
     }
 
-    public JSONObject fetchRule(boolean flag,int t) {
+    public static JSONObject fetchRule(boolean flag,int t) {
         try {
             if (flag || siteRule == null) {
                 String json = OkHttpUtil.string(jsonUrl+"?t="+Time(), null);
@@ -80,7 +80,7 @@ public class PushAgent extends Spider {
         return siteRule;
     }
 
-    public String getRuleVal(JSONObject o,String key, String defaultVal) {
+    public static String getRuleVal(JSONObject o,String key, String defaultVal) {
         String v = o.optString(key);
         if (v.isEmpty() || v.equals("空"))
             return defaultVal;
@@ -322,7 +322,7 @@ public class PushAgent extends Spider {
         }
     }
 
-    public void listFiles(Map<String, String> map, String str, String str2, String str3) {
+    public static void listFiles(Map<String, String> map, String str, String str2, String str3) {
         String str4;
         try {
             String str5 = "https://api.aliyundrive.com/adrive/v3/file/list";
@@ -379,7 +379,7 @@ public class PushAgent extends Spider {
         }
     }
 
-    public String getAliContent(List<String> list,JSONObject jSONObject6) {
+    public static String getAliContent(List<String> list,JSONObject jSONObject6) {
         String str;
         try {
             String url = list.get(0).trim();
@@ -482,6 +482,10 @@ public class PushAgent extends Spider {
 
     @Override
     public String detailContent(List<String> list) {
+        return getDetail(list);
+    }
+
+    public static String getDetail(List<String> list) {
         try {
             String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
