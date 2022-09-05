@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class Base64Utils {
 
     public static JSONArray getJSONByUrl(String url){
-        JSONArray a2 = null;
+        JSONArray a2 = new JSONArray();
         try {
             String json = OkHttpUtil.string(url, Misc.Headers(1,url));
             String s = getBase64(json),title="",uri="",atime="",zt="";

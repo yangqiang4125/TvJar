@@ -45,20 +45,22 @@ public class Upyunso extends Spider {
         try {
             JSONArray jSONArray = new JSONArray();
             JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key);
-            String pic = "http://image.xinjun58.com/image/tv/ups.jpg";
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject v = arr.getJSONObject(i);
-                String id = v.getString("url");
-                String title = v.getString("title");
-                v.put("vod_id", id + "$$$" + pic + "$$$" + title);
-                v.put("vod_name", title);
-                v.put("remark", "");
-                v.put("vod_pic", pic);
-                jSONArray.put(v);
+            if (arr.length() > 0) {
+                String pic = "http://image.xinjun58.com/image/tv/ups.jpg";
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject v = arr.getJSONObject(i);
+                    String id = v.getString("url");
+                    String title = v.getString("title");
+                    v.put("vod_id", id + "$$$" + pic + "$$$" + title);
+                    v.put("vod_name", title);
+                    v.put("remark", "");
+                    v.put("vod_pic", pic);
+                    jSONArray.put(v);
+                }
+                JSONObject jSONObject2 = new JSONObject();
+                jSONObject2.put("list", jSONArray);
+                return jSONObject2.toString();
             }
-            JSONObject jSONObject2 = new JSONObject();
-            jSONObject2.put("list", jSONArray);
-            return jSONObject2.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
