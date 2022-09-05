@@ -25,6 +25,7 @@ public class JsonBasic {
                     try {
                         String realUrl = reqHeaders.get("url");
                         reqHeaders.remove("url");
+                        SpiderDebug.log(realUrl + url);
                         String json = OkHttpUtil.string(realUrl + url, reqHeaders);
                         JSONObject taskResult = Misc.jsonParse(url, json);
                         if (taskResult == null)
@@ -51,7 +52,7 @@ public class JsonBasic {
                 int start = url.indexOf("cat_ext=");
                 int end = url.indexOf("&", start);
                 String ext = url.substring(start + 8, end);
-                ext = Base64.decode(ext, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
+                ext = new String(Base64.decode(ext, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
                 String newUrl = url.substring(0, start) + url.substring(end + 1);
                 JSONObject jsonObject = new JSONObject(ext);
                 if (jsonObject.has("header")) {
@@ -78,6 +79,5 @@ public class JsonBasic {
         } catch (Exception e) {
             return null;
         }
-        return decodeStr;
     }
 }
