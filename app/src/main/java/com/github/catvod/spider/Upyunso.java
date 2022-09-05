@@ -45,7 +45,7 @@ public class Upyunso extends Spider {
         try {
             JSONArray jSONArray = new JSONArray();
             key = URLEncoder.encode(key);
-            JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key);
+            JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key+"&page=1");
             if (arr.length() > 0) {
                 String pic = "http://image.xinjun58.com/image/tv/ups.jpg";
                 for (int i = 0; i < arr.length(); i++) {
