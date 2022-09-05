@@ -44,6 +44,11 @@ public class JsonBasic {
         return new JSONObject();
     }
 
+    public static String getBase64(String json){
+        json = new String(Base64.decode(json, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
+        return json;
+    }
+
     public static HashMap<String, String> getReqHeader(String url) {
         HashMap<String, String> reqHeaders = new HashMap<>();
         reqHeaders.put("url", url);

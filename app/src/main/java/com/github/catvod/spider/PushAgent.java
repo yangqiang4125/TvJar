@@ -216,7 +216,7 @@ public class PushAgent extends Spider {
     }
 
 
-    private void refreshTk() {
+    private static void refreshTk() {
         long b = Time();
         String str = j;
         if (str.isEmpty() || StopRefresh - b <= 600) {
@@ -808,6 +808,10 @@ public class PushAgent extends Spider {
 
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) {
+        return player(flag, id, vipFlags);
+    }
+
+    public static String player(String flag, String id, List<String> vipFlags) {
         JSONObject result = new JSONObject();
         try {
             switch (flag) {
