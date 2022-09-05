@@ -70,7 +70,8 @@ public class Misc {
 
         headers.put("Connection", " Keep-Alive");
         if (url != null) {
-            headers.put("Referer", " " +url);
+            String baseUrl = url.replaceAll("(^https?://(\\w+\\.){2}\\w+).*$", "$1");
+            headers.put("Referer", " " +baseUrl);
         }
         return headers;
     }
