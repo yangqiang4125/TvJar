@@ -51,7 +51,7 @@ public class JsonBasic {
                 int start = url.indexOf("cat_ext=");
                 int end = url.indexOf("&", start);
                 String ext = url.substring(start + 8, end);
-                ext = getBase64(ext);
+                ext = Base64.decode(ext, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
                 String newUrl = url.substring(0, start) + url.substring(end + 1);
                 JSONObject jsonObject = new JSONObject(ext);
                 if (jsonObject.has("header")) {
@@ -70,10 +70,17 @@ public class JsonBasic {
         return reqHeaders;
     }
 
-    public static String getBase64(String json){
-        json = new String(Base64.decode(json, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
-        return json;
+    public static String getBase64(String decodeStr){
+        if (decodeStr == null) return null;
+        try {
+            byte[] b = Base64.decode(decodeStr,Base64.DEFAULT);
+            return new String(b);
+        } catch (Exception e) {
+            return null;
+        }
+        return decodeStr;
     }
+
 
     public static HashMap<String, String> parse(String url) {
         String json = OkHttpUtil.string(url, Misc.Headers(1));
