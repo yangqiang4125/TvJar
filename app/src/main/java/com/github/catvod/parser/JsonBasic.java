@@ -80,15 +80,4 @@ public class JsonBasic {
         }
         return decodeStr;
     }
-
-
-    public static HashMap<String, String> parse(String url) {
-        String json = OkHttpUtil.string(url, Misc.Headers(1));
-
-        json = new String(Base64.decode(json, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
-        HashMap<String, String> reqHeaders = new HashMap<>();
-
-        return reqHeaders;
-    }
-
 }
