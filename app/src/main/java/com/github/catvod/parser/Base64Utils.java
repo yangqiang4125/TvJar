@@ -50,7 +50,6 @@ public class Base64Utils {
                         a2.put(o2);
                     }
                 }
-                System.out.println(a2.toString());
             }
         } catch (JSONException e) {
             e.printStackTrace();
