@@ -25,7 +25,6 @@ public class JsonBasic {
                     try {
                         String realUrl = reqHeaders.get("url");
                         reqHeaders.remove("url");
-                        SpiderDebug.log(realUrl + url);
                         String json = OkHttpUtil.string(realUrl + url, reqHeaders);
                         JSONObject taskResult = Misc.jsonParse(url, json);
                         if (taskResult == null)
@@ -44,11 +43,6 @@ public class JsonBasic {
         return new JSONObject();
     }
 
-    public static String getBase64(String json){
-        json = new String(Base64.decode(json, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
-        return json;
-    }
-
     public static HashMap<String, String> getReqHeader(String url) {
         HashMap<String, String> reqHeaders = new HashMap<>();
         reqHeaders.put("url", url);
@@ -57,7 +51,7 @@ public class JsonBasic {
                 int start = url.indexOf("cat_ext=");
                 int end = url.indexOf("&", start);
                 String ext = url.substring(start + 8, end);
-                ext = new String(Base64.decode(ext, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
+                ext = getBase64(ext);
                 String newUrl = url.substring(0, start) + url.substring(end + 1);
                 JSONObject jsonObject = new JSONObject(ext);
                 if (jsonObject.has("header")) {
@@ -75,4 +69,19 @@ public class JsonBasic {
         }
         return reqHeaders;
     }
+
+    public static String getBase64(String json){
+        json = new String(Base64.decode(json, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
+        return json;
+    }
+
+    public static HashMap<String, String> parse(String url) {
+        String json = OkHttpUtil.string(url, Misc.Headers(1));
+
+        json = new String(Base64.decode(json, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
+        HashMap<String, String> reqHeaders = new HashMap<>();
+
+        return reqHeaders;
+    }
+
 }
