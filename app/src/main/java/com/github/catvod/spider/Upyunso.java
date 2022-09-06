@@ -21,18 +21,18 @@ public class Upyunso extends Spider {
     @Override
     public String detailContent(List<String> list) {
         try {
-            String id = list.get(0);
-            String[] idInfo = id.split("\\$\\$\\$");
-            String url = idInfo[0];
-            String pic = idInfo[1];
-            String title = idInfo[2];
-            url = Base64Utils.sendGet(url);
-            list.set(0, url + "$$$" + pic + "$$$" + title);
             return PushAgent.getDetail(list);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public static String getRealUrl(String url){
+        if (url.contains("upyunso.com/download")) {
+            url = Base64Utils.sendGet(url);
+        }
+        return url;
     }
 
     @Override

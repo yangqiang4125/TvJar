@@ -23,15 +23,12 @@ import okhttp3.Call;
 import org.jsoup.Jsoup;
 
 public class XBiubiu extends Spider {
-    private static PushAgent pushAgent= null;
     @Override
     public void init(Context context) {
         super.init(context);
     }
 
     public void init(Context context, String extend) {
-        pushAgent= new PushAgent();
-        pushAgent.init(context, "");
         super.init(context, extend);
         this.ext = extend;
     }
@@ -61,9 +58,7 @@ public class XBiubiu extends Spider {
 
     protected HashMap<String, String> getHeaders(String url) {
         HashMap<String, String> headers = new HashMap<>();
-        String ua = getRuleVal("UserW", Misc.UaWinChrome).trim();
-        if (ua.isEmpty())
-            ua = Misc.UaWinChrome;
+        String ua = getRuleVal("ua", Misc.UaWinChrome).trim();
         headers.put("User-Agent", ua);
         return headers;
     }
@@ -309,7 +304,7 @@ public class XBiubiu extends Spider {
                 list.put(vod);
                 result.put("list", list);
                 return result.toString();
-            } else return pushAgent.detailContent(ids);
+            } else return PushAgent.getDetail(ids);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }

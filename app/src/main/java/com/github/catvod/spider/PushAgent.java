@@ -41,11 +41,15 @@ public class PushAgent extends Spider {
     public static Pattern Folder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
     public static String Token="http://catvod.fun:8001/tv/ali.txt";
     public static JSONObject siteRule = null;
-    public static String jsonUrl = "http://test.xinjun58.com/sp/d.json";
 
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
+        if (extend != null && !extend.equals("")) {
+            if (extend.startsWith("http")) {
+                Misc.jsonUrl = extend;
+            }
+        }
         fetchRule(false,0);
     }
 
@@ -58,7 +62,7 @@ public class PushAgent extends Spider {
     public static JSONObject fetchRule(boolean flag,int t) {
         try {
             if (flag || siteRule == null) {
-                String json = OkHttpUtil.string(jsonUrl+"?t="+Time(), null);
+                String json = OkHttpUtil.string(Misc.jsonUrl+"?t="+Time(), null);
                 JSONObject jo = new JSONObject(json);
                 if(t==0) {
                     String[] fenleis = getRuleVal(jo,"fenlei", "").split("#");
@@ -87,7 +91,7 @@ public class PushAgent extends Spider {
         return v;
     }
 
-    public String getRuleVal(JSONObject o,String key) {
+    public static String getRuleVal(JSONObject o,String key) {
         return getRuleVal(o,key, "");
     }
 
@@ -469,6 +473,7 @@ public class PushAgent extends Spider {
             }
             String join2 = TextUtils.join("$$$", arrayList3);
             jSONObject6.put("vod_play_url", join2);
+            jSONObject6.put("vod_area", type + Token);
             JSONObject result = new JSONObject();
             JSONArray jSONArray2 = new JSONArray();
             jSONArray2.put(jSONObject6);
@@ -490,6 +495,7 @@ public class PushAgent extends Spider {
             String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
             if (idInfo.length > 0)  url = idInfo[0].trim();
+            url = Upyunso.getRealUrl(url);
             String pic = null;
             if (idInfo.length>1&&!idInfo[1].equals("")) {
                 pic = idInfo[1].trim();

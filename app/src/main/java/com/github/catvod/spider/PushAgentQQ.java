@@ -13,25 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PushAgentQQ extends Spider {
-    private PushAgent pushAgent;
-    private static String j = "";
-    private static final long n = 0;
-    protected String ext = null;
     protected JSONObject rule = null;
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        pushAgent = new PushAgent();
-        if (extend != null) {
-            if (!extend.startsWith("http")) {
-                String[] arr = extend.split(";");
-                this.ext = arr[1];
-                pushAgent.jsonUrl = arr[1];
-            }else {
-                this.ext = extend;
+        if (extend != null && !extend.equals("")) {
+            if (extend.startsWith("http")) {
+                Misc.jsonUrl = extend;
             }
         }
-        pushAgent.init(context, extend);
     }
 
     @Override
@@ -40,7 +30,7 @@ public class PushAgentQQ extends Spider {
             fetchRule(true);
             JSONObject result = new JSONObject();
             JSONArray classes = new JSONArray();
-            String[] fenleis = pushAgent.getRuleVal(rule,"fenlei", "").split("#");
+            String[] fenleis = PushAgent.getRuleVal(rule,"fenlei", "").split("#");
             for (String fenlei : fenleis) {
                 String[] info = fenlei.split("\\$");
                 JSONObject jsonObject = new JSONObject();
@@ -57,15 +47,15 @@ public class PushAgentQQ extends Spider {
         return "";
     }
     protected JSONObject fetchRule(boolean flag) {
-        rule = pushAgent.fetchRule(flag, 0);
+        rule = PushAgent.fetchRule(flag, 0);
         return rule;
     }
     @Override
     public String homeVideoContent() {
         try {
-            JSONObject jo = pushAgent.fetchRule(true,1);
+            JSONObject jo = PushAgent.fetchRule(true,1);
             JSONArray videos = new JSONArray();
-            String[] fenleis = pushAgent.getRuleVal(jo, "fenlei", "").split("#");
+            String[] fenleis = PushAgent.getRuleVal(jo, "fenlei", "").split("#");
             for (String fenlei : fenleis) {
                 String[] info = fenlei.split("\\$");
                 JSONObject data = category(info[1], "1", false, new HashMap<>(),jo);
@@ -91,16 +81,16 @@ public class PushAgentQQ extends Spider {
 
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend,JSONObject jo) {
         try {
-            if (jo == null) jo = pushAgent.fetchRule(true,1);
+            if (jo == null) jo = PushAgent.fetchRule(true,1);
             JSONArray videos = new JSONArray();
             JSONArray array = jo.getJSONArray(tid);
             JSONObject jsonObject = null, v = null;
             String url=null,name=null,pic=null;
             for (int i = 0; i < array.length(); i++) {
                 jsonObject = array.getJSONObject(i);
-                url = pushAgent.getRuleVal(jsonObject, "url");
-                name = pushAgent.getRuleVal(jsonObject, "name");
-                pic = pushAgent.getRuleVal(jsonObject, "pic");
+                url = PushAgent.getRuleVal(jsonObject, "url");
+                name = PushAgent.getRuleVal(jsonObject, "name");
+                pic = PushAgent.getRuleVal(jsonObject, "pic");
                 if(pic.equals("")) pic = Misc.getWebName(url, 1);
                 v = new JSONObject();
                 v.put("vod_id", url + "$$$" + pic + "$$$" + name);
@@ -134,13 +124,13 @@ public class PushAgentQQ extends Spider {
 
     @Override
     public String detailContent(List<String> list) {
-        return pushAgent.detailContent(list);
+        return PushAgent.getDetail(list);
     }
 
 
     @Override
     public String playerContent(String str, String str2, List<String> list) {
-        return pushAgent.playerContent(str, str2, list);
+        return PushAgent.player(str, str2, list);
     }
 
     @Override
