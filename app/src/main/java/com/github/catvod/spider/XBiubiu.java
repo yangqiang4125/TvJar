@@ -26,7 +26,6 @@ public class XBiubiu extends Spider {
     @Override
     public void init(Context context) {
         super.init(context);
-        PushAgent.fetchRule(false,0);
     }
 
     public void init(Context context, String extend) {
