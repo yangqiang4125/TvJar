@@ -383,12 +383,9 @@ public class PushAgent extends Spider {
         }
     }
 
-    public static String getAliContent(List<String> list,JSONObject jSONObject6) {
+    public static String getAliContent(String url,JSONObject jSONObject6) {
         String str;
         try {
-            String url = list.get(0).trim();
-            String[] idInfo = url.split("\\$\\$\\$");
-            if (idInfo.length > 0)  url = idInfo[0].trim();
             Pattern pattern = Folder;
             Matcher matcher = pattern.matcher(url);
             if (!matcher.find()) {
@@ -640,7 +637,7 @@ public class PushAgent extends Spider {
                 result.put("list", lists);
                 return result.toString();
             } else if (url.startsWith("http") && (matcher2.find())) {
-                return getAliContent(list,vodAtom);
+                return getAliContent(url,vodAtom);
             } else if (url.startsWith("http") && (!matcher.find()) && (!matcher2.find())) {
                 Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
