@@ -107,6 +107,7 @@ public class PushAgentQQ extends Spider {
             result.put("limit", 120);
             result.put("total", Integer.MAX_VALUE);
             result.put("list", videos);
+            return result;
         } catch (Exception e) {
             SpiderDebug.log(e);
         }
