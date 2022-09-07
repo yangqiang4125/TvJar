@@ -478,6 +478,7 @@ public class PushAgent extends Spider {
             vodAtom.put("vod_content", url);
             vodAtom.put("vod_area", type + refreshToken);
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
+                vodAtom.put("vod_play_from", "jx");
                 Elements playListA = null;
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
@@ -498,13 +499,14 @@ public class PushAgent extends Spider {
                         String playList = TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     }
+                    vodAtom.put("vod_play_from", "parse");
                 } else {
                     vodAtom.put("vod_play_url", "立即播放$" + url);
                 }
                 VodName = doc.select("head > title").text();
                 JSONObject result = new JSONObject();
                 vodAtom.put("vod_name", VodName);
-                vodAtom.put("vod_play_from", "jx");
+
                 lists.put(vodAtom);
                 result.put("list", lists);
                 return result.toString();
@@ -826,11 +828,11 @@ public class PushAgent extends Spider {
                     return result.toString();
                 }
             }
-            if(flag.startsWith("嗅探")){
+            if(flag.startsWith("嗅探")||flag.equals("parse")){
                 result.put("parse", 1);
                 result.put("playUrl", "");
                 result.put("url", id);
-                result.put("header", Misc.jHeaders(type,id).toString());
+                if(!flag.equals("parse")) result.put("header", Misc.jHeaders(type,id).toString());
                 return result.toString();
             }
         } catch (Exception e) {

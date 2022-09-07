@@ -82,30 +82,51 @@ public class PushAgentQQ extends Spider {
 
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend,JSONObject jo) {
         try {
-            if (jo == null) jo = PushAgent.fetchRule(true,1);
             JSONArray videos = new JSONArray();
-            JSONArray array = jo.getJSONArray(tid);
-            JSONObject jsonObject = null, v = null;
             String url=null,name=null,pic=null;
-            for (int i = 0; i < array.length(); i++) {
-                jsonObject = array.getJSONObject(i);
-                url = PushAgent.getRuleVal(jsonObject, "url");
-                name = PushAgent.getRuleVal(jsonObject, "name");
-                pic = PushAgent.getRuleVal(jsonObject, "pic");
-                if(pic.equals("")) pic = Misc.getWebName(url, 1);
-                v = new JSONObject();
-                v.put("vod_id", url + "$$$" + pic + "$$$" + name);
-                v.put("vod_name", name);
-                v.put("vod_pic", pic);
-                v.put("vod_remarks", Misc.getWebName(url,0));
-                videos.put(v);
+            JSONObject jsonObject = null, v = null;
+            if (tid.equals("bili")) {
+                String json = OkHttpUtil.string("https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all", null);
+                JSONObject j = new JSONObject(json);
+                JSONObject o = j.getJSONObject("data");
+                JSONArray array = o.getJSONArray("list");
+                for (int i = 0; i < array.length(); i++) {
+                    jsonObject = array.getJSONObject(i);
+                    url = jsonObject.optString("short_link", "");
+                    name = jsonObject.optString("title", "");
+                    pic = jsonObject.optString("pic", "");
+                    v = new JSONObject();
+                    v.put("vod_id", url + "$$$" + pic + "$$$" + name);
+                    v.put("vod_name", name);
+                    v.put("vod_pic", pic);
+                    v.put("vod_remarks", "");
+                    videos.put(v);
+                }
+            }else{
+                if (jo == null) jo = PushAgent.fetchRule(true,1);
+                JSONArray array = jo.getJSONArray(tid);
+                for (int i = 0; i < array.length(); i++) {
+                    jsonObject = array.getJSONObject(i);
+                    url = PushAgent.getRuleVal(jsonObject, "url");
+                    name = PushAgent.getRuleVal(jsonObject, "name");
+                    pic = PushAgent.getRuleVal(jsonObject, "pic");
+                    if(pic.equals("")) pic = Misc.getWebName(url, 1);
+                    v = new JSONObject();
+                    v.put("vod_id", url + "$$$" + pic + "$$$" + name);
+                    v.put("vod_name", name);
+                    v.put("vod_pic", pic);
+                    v.put("vod_remarks", Misc.getWebName(url,0));
+                    videos.put(v);
+                }
             }
-
             JSONObject result = new JSONObject();
-            result.put("page", pg);
-            result.put("pagecount", Integer.MAX_VALUE);
-            result.put("limit", 120);
-            result.put("total", Integer.MAX_VALUE);
+            int limit = 20;int total = videos.length();
+            int page = Integer.parseInt(pg)+1;
+            result.put("page", page);
+            int pageCount = (int)Math.ceil((double)total/limit);
+            result.put("pagecount", pageCount);
+            result.put("limit", limit);
+            result.put("total", total);
             result.put("list", videos);
             return result;
         } catch (Exception e) {
