@@ -277,7 +277,7 @@ public class PushAgent extends Spider {
                 if (vod.contains("x-oss-expires")) {
                     j++;
                     video.put("" + j, site + vod);
-                    vod = Proxy.localProxyUrl() + "?do=ali&type=media&share_id=" + shareId + "&file_id=" + fileId + "&media_id=" + j;
+                    vod = Proxy.localProxyUrl() + "?do=push&type=media&share_id=" + shareId + "&file_id=" + fileId + "&media_id=" + j;
                 }
                 lists.add(vod);
             }
@@ -806,7 +806,7 @@ public class PushAgent extends Spider {
                     String[] split = id.split("\\+");
                     String str3 = split[0];
                     String str5 = split[2];
-                    String url = Proxy.localProxyUrl() + "?do=ali&type=m3u8&share_id=" + str3 + "&file_id=" + str5;
+                    String url = Proxy.localProxyUrl() + "?do=push&type=m3u8&share_id=" + str3 + "&file_id=" + str5;
                     result.put("parse", "0");
                     result.put("playUrl", "");
                     result.put("url", url);
