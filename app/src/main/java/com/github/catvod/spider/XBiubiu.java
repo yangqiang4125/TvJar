@@ -147,15 +147,9 @@ public class XBiubiu extends Spider {
                 }
             }
             JSONObject result = new JSONObject();
-            int limit = 20;
-            int page = Integer.parseInt(pg);
-            result.put("page", page);
-            int pageCount = videos.length() == limit ? page + 1 : page;
-            result.put("pagecount", pageCount);
-            result.put("limit", limit);
             result.put("page", pg);
             result.put("pagecount", Integer.MAX_VALUE);
-            result.put("limit", 90);
+            result.put("limit", 120);
             result.put("total", Integer.MAX_VALUE);
             result.put("list", videos);
             return result;
