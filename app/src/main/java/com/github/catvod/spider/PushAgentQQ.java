@@ -136,11 +136,6 @@ public class PushAgentQQ extends Spider {
 
     @Override
     public  String searchContent(String key, boolean quick) {
-        if (key.equals("000")) {
-            PushAgent.type=0;
-        }if (key.equals("111")) {
-            PushAgent.type=1;
-        }
         JSONObject result = new JSONObject();
         JSONArray videos = new JSONArray();
         try {
