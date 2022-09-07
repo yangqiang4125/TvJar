@@ -147,10 +147,10 @@ public class XBiubiu extends Spider {
                 }
             }
             JSONObject result = new JSONObject();
-            result.put("page", pg);
-            result.put("pagecount", Integer.MAX_VALUE);
-            result.put("limit", 90);
-            result.put("total", Integer.MAX_VALUE);
+            result.put("page", 1);
+            result.put("pagecount", 1);
+            result.put("limit", videos.length());
+            result.put("total", videos.length());
             result.put("list", videos);
             return result;
         } catch (Exception e) {
