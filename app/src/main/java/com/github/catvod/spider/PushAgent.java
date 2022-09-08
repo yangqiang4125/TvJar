@@ -9,7 +9,9 @@ import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 import okhttp3.Call;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +30,7 @@ import java.util.regex.Pattern;
 public class PushAgent extends Spider {
     private static long timeToken = 0;
     private static String accessToken = "";
+    private static String refreshToken = "http://catvod.fun:8001/tv/ali.txt";
     private static Map<String, String> shareToken = new HashMap<>();
     private static Map<String, Long> shareExpires = new HashMap<>();
     private static final Map<String, Map<String, String>> videosMap = new HashMap<>();
@@ -36,6 +39,8 @@ public class PushAgent extends Spider {
     public static Pattern regexAli = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     public static Pattern regexAliFolder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
 
+    public static JSONObject siteRule = null;
+    public static Integer type=1;
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
@@ -49,13 +54,13 @@ public class PushAgent extends Spider {
 
     public static void getToken(String token){
         if (token.startsWith("http")) {
-            Misc.refreshToken = OkHttpUtil.string(token, null);
-        }else Misc.refreshToken = token;
+            refreshToken = OkHttpUtil.string(token, null);
+        }else refreshToken = token;
     }
 
     public static JSONObject fetchRule(boolean flag,int t) {
         try {
-            if (flag || Misc.siteRule == null) {
+            if (flag || siteRule == null) {
                 String json = OkHttpUtil.string(Misc.jsonUrl+"?t="+Time(), null);
                 JSONObject jo = new JSONObject(json);
                 if(t==0) {
@@ -64,18 +69,18 @@ public class PushAgent extends Spider {
                         String[] info = fenlei.split("\\$");
                         jo.remove(info[1]);
                     }
-                    Misc.siteRule = jo;
-                    String tk = Misc.siteRule.optString("token","");
+                    siteRule = jo;
+                    String tk = siteRule.optString("token","");
                     if(!tk.equals("")){
                         getToken(tk);
                     }
-                    Misc.type = Misc.siteRule.optInt("ua", 1);
+                    type = siteRule.optInt("ua", 1);
                 }
                 return jo;
             }
         } catch (JSONException e) {
         }
-        return Misc.siteRule;
+        return siteRule;
     }
 
     public static String getRuleVal(JSONObject o,String key, String defaultVal) {
@@ -129,7 +134,7 @@ public class PushAgent extends Spider {
         if (accessToken.isEmpty() || timeToken - timeSys <= 600) {
             try {
                 JSONObject json = new JSONObject();
-                json.put("refresh_token", Misc.refreshToken);
+                json.put("refresh_token", refreshToken);
                 JSONObject response = new JSONObject(postJson("https://api.aliyundrive.com/token/refresh", json.toString(), getHeaders()));
                 accessToken = response.getString("token_type") + " " + response.getString("access_token");
                 timeToken = response.getLong("expires_in") + timeSys;
@@ -319,7 +324,7 @@ public class PushAgent extends Spider {
     }
 
 
-    public static void listFiles(Map<String, String> map, String shareId, String shareToken, String fileId,String _url) {
+    public static void listFiles(Map<String, String> map, String shareId, String shareToken, String fileId) {
         try {
             String url = "https://api.aliyundrive.com/adrive/v3/file/list";
             HashMap<String, String> headers = getHeaders();
@@ -350,7 +355,7 @@ public class PushAgent extends Spider {
                         //vnd.rn-realmedia-vbr 为rmvb格式
                         if (item.getString("mime_type").contains("video")||item.getString("mime_type").contains("vnd.rn-realmedia-vbr")) {
                             String replace = item.getString("name").replace("#", "_").replace("$", "_");
-                            map.put(replace, shareId + "+" + shareToken + "+" + item.getString("file_id")+"+"+item.getString("category")+"+"+_url);
+                            map.put(replace, shareId + "+" + shareToken + "+" + item.getString("file_id")+"+"+item.getString("category"));
                         }
                     }
                 }
@@ -359,7 +364,7 @@ public class PushAgent extends Spider {
 
             for (String item : arrayList) {
                 try {
-                    listFiles(map, shareId, shareToken, item,_url);
+                    listFiles(map, shareId, shareToken, item);
                 } catch (Exception e) {
                     SpiderDebug.log(e);
                     return;
@@ -413,7 +418,7 @@ public class PushAgent extends Spider {
             }
             String shareTk = getShareTk(shareId, "");
             Map<String, String> hashMap = new HashMap<>();
-            listFiles(hashMap, shareId, shareTk, fileId,url);
+            listFiles(hashMap, shareId, shareTk, fileId);
             ArrayList<String> arrayList2 = new ArrayList<>(hashMap.keySet());
             Collections.sort(arrayList2);
             for (String item : arrayList2) {
@@ -471,7 +476,7 @@ public class PushAgent extends Spider {
             vodAtom.put("vod_pic", pic);
             vodAtom.put("type_name", typeName);
             vodAtom.put("vod_content", url);
-            vodAtom.put("vod_area", Misc.btype);
+            vodAtom.put("vod_area", type + refreshToken);
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
                 Elements playListA = null;
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
@@ -600,7 +605,6 @@ public class PushAgent extends Spider {
                 return result.toString();
             } else if (regexAli.matcher(url).find()) {
                 if(VodName!=null) vodAtom.put("vod_name", VodName);
-                vodAtom.put("vod_id", TextUtils.join("$$$",idInfo));
                 return getAliContent(url,vodAtom);
             } else if (url.startsWith("http://") || url.startsWith("https://")) {
                 Document doc = null;
@@ -788,14 +792,14 @@ public class PushAgent extends Spider {
                     result.put("playUrl", "");
                     if(id.contains("bilibili")){
                         result.put("header", Misc.jHeaders(0,id).toString());
-                    } else result.put("header", Misc.jHeaders(Misc.type,id).toString());
+                    } else result.put("header", Misc.jHeaders(type,id).toString());
                     return result.toString();
                 }
                 case "player": {
                     result.put("parse", 0);
                     result.put("playUrl", "");
                     result.put("url", id);
-                    result.put("header", Misc.jHeaders(Misc.type,id).toString());
+                    result.put("header", Misc.jHeaders(type,id).toString());
                     return result.toString();
                 }
                 case "AliYun":
@@ -807,7 +811,6 @@ public class PushAgent extends Spider {
                     result.put("playUrl", "");
                     result.put("url", url);
                     result.put("header", "");
-                    Misc.btype = split[4];
                     return result.toString();
                 case "4K原画": {
                     split = id.split("\\+");
@@ -824,7 +827,7 @@ public class PushAgent extends Spider {
                 }
             }
             if(flag.startsWith("嗅探")){
-                result.put("header", Misc.jHeaders(Misc.type,id).toString());
+                result.put("header", Misc.jHeaders(type,id).toString());
             }
             if(id.contains("b23.tv"))result.put("header", Misc.jHeaders(1,id).toString());
             result.put("parse", 1);
