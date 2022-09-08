@@ -19,7 +19,7 @@ public class Misc {
     public static String refreshToken="http://catvod.fun:8001/tv/ali.txt";
     public static JSONObject siteRule = null;
     public static Integer type=1;
-    public static String btype="";
+    public static String btype="N";
     public static boolean isVip(String url) {
         // 适配2.0.6的调用应用内解析列表的支持, 需要配合直连分析一起使用，参考cjt影视和极品直连
         try {

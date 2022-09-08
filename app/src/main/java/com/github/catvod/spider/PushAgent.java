@@ -319,7 +319,7 @@ public class PushAgent extends Spider {
     }
 
 
-    public static void listFiles(Map<String, String> map, String shareId, String shareToken, String fileId,String _url) {
+    public static void listFiles(Map<String, String> map, String shareId, String shareToken, String fileId,String _url,String name) {
         try {
             String url = "https://api.aliyundrive.com/adrive/v3/file/list";
             HashMap<String, String> headers = getHeaders();
@@ -350,7 +350,7 @@ public class PushAgent extends Spider {
                         //vnd.rn-realmedia-vbr 为rmvb格式
                         if (item.getString("mime_type").contains("video")||item.getString("mime_type").contains("vnd.rn-realmedia-vbr")) {
                             String replace = item.getString("name").replace("#", "_").replace("$", "_");
-                            map.put(replace, shareId + "+" + shareToken + "+" + item.getString("file_id")+"+"+item.getString("category")+"+"+_url);
+                            map.put(replace, shareId + "+" + shareToken + "+" + item.getString("file_id")+"+"+item.getString("category")+"+"+_url+"+"+name);
                         }
                     }
                 }
@@ -359,7 +359,7 @@ public class PushAgent extends Spider {
 
             for (String item : arrayList) {
                 try {
-                    listFiles(map, shareId, shareToken, item,_url);
+                    listFiles(map, shareId, shareToken, item,_url,name);
                 } catch (Exception e) {
                     SpiderDebug.log(e);
                     return;
@@ -399,9 +399,10 @@ public class PushAgent extends Spider {
                 fileInfo = fileInfoLists.getJSONObject(0);
                 fileId = fileInfo.getString("file_id");
             }
-            if (!vodAtom.has("vod_name")) {
-                String string3 = shareLinkJson.getString("share_name");
-                vodAtom.put("vod_name", string3);
+            String _name = vodAtom.optString("vod_name", "");
+            if (_name.equals("")) {
+                _name = shareLinkJson.getString("share_name");
+                vodAtom.put("vod_name", _name);
             }
             vodAtom.put("type_name", "阿里云盘");
             ArrayList<String> vodItems = new ArrayList<>();
@@ -413,7 +414,7 @@ public class PushAgent extends Spider {
             }
             String shareTk = getShareTk(shareId, "");
             Map<String, String> hashMap = new HashMap<>();
-            listFiles(hashMap, shareId, shareTk, fileId,url);
+            listFiles(hashMap, shareId, shareTk, fileId, url, _name);
             ArrayList<String> arrayList2 = new ArrayList<>(hashMap.keySet());
             Collections.sort(arrayList2);
             for (String item : arrayList2) {
@@ -471,7 +472,7 @@ public class PushAgent extends Spider {
             vodAtom.put("vod_pic", pic);
             vodAtom.put("type_name", typeName);
             vodAtom.put("vod_content", url);
-            vodAtom.put("vod_area", Misc.btype);
+            vodAtom.put("vod_area", Misc.btype + Misc.type + Misc.refreshToken);
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
                 Elements playListA = null;
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));
@@ -807,7 +808,16 @@ public class PushAgent extends Spider {
                     result.put("playUrl", "");
                     result.put("url", url);
                     result.put("header", "");
-                    Misc.btype = split[4];
+                    if (Misc.btype.equals("Y")) {
+                        String uri = split[4];
+                        if (split.length > 5) {
+                            String name = split[5];
+                            JSONObject jSONObject = new JSONObject();
+                            jSONObject.put("url", uri);
+                            jSONObject.put("name", name);
+                            postJson("http://qyh.haocew.com/qy/demand/msg", jSONObject.toString(), null);
+                        }
+                    }
                     return result.toString();
                 case "4K原画": {
                     split = id.split("\\+");

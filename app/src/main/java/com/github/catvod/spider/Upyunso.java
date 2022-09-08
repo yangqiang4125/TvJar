@@ -3,6 +3,7 @@ package com.github.catvod.spider;
 import android.content.Context;
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.parser.Base64Utils;
+import com.github.catvod.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -44,6 +45,11 @@ public class Upyunso extends Spider {
     @Override
     public String searchContent(String key, boolean z) {
         try {
+            if (key.equals("000")) {
+                Misc.btype="N";
+            }if (key.equals("111")) {
+                Misc.btype="Y";
+            }
             JSONArray jSONArray = new JSONArray();
             key = URLEncoder.encode(key);
             JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key+"&page=1");
