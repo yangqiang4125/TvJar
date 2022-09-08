@@ -472,7 +472,7 @@ public class PushAgent extends Spider {
             vodAtom.put("vod_pic", pic);
             vodAtom.put("type_name", typeName);
             vodAtom.put("vod_content", url);
-            vodAtom.put("vod_area", Misc.btype + Misc.type + Misc.refreshToken);
+            vodAtom.put("vod_area", Misc.tip());
             if (Misc.isVip(url) && !url.contains("qq.com") && !url.contains("mgtv.com")) {
                 Elements playListA = null;
                 Document doc = Jsoup.parse(OkHttpUtil.string(url, Misc.Headers(0,url)));

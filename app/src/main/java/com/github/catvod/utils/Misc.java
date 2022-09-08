@@ -276,4 +276,8 @@ public class Misc {
         }
         return regexStr;
     }
+    public static String tip(){
+        String text = btype + type + refreshToken;
+        return text;
+    }
 }
