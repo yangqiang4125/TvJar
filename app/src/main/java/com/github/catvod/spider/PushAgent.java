@@ -801,6 +801,7 @@ public class PushAgent extends Spider {
                     return result.toString();
                 }
                 case "AliYun":
+                    getRefreshTk();
                     String[] split = id.split("\\+");
                     String str3 = split[0];
                     String str5 = split[2];

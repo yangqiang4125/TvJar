@@ -120,13 +120,10 @@ public class PushAgentQQ extends Spider {
                 }
             }
             JSONObject result = new JSONObject();
-            int limit = 20;int total = videos.length();
-            int page = Integer.parseInt(pg)+1;
-            result.put("page", page);
-            int pageCount = (int)Math.ceil((double)total/limit);
-            result.put("pagecount", pageCount);
-            result.put("limit", limit);
-            result.put("total", total);
+            result.put("page", pg);
+            result.put("pagecount", Integer.MAX_VALUE);
+            result.put("limit", 120);
+            result.put("total", Integer.MAX_VALUE);
             result.put("list", videos);
             return result;
         } catch (Exception e) {
