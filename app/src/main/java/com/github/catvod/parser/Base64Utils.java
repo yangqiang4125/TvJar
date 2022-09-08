@@ -43,7 +43,7 @@ public class Base64Utils {
                             if (zt.contains("4K")||zt.contains("4k")) {
                                 remark = " 4K";
                             }else if(zt.contains("1080")) remark = " 1080P";
-                            if(!remark.equals("")||!ctime.equals(""))remark  = "/" + remark + " "+ctime;
+                            if(!remark.equals("")||!ctime.equals(""))remark  = remark + " "+ctime;
                             uri = o.optString("page_url", "");
                             o2.put("title", title);
                             o2.put("remark", remark);
