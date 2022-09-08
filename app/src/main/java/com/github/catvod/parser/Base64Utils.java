@@ -19,7 +19,7 @@ public class Base64Utils {
         JSONArray a2 = new JSONArray();
         try {
             String json = OkHttpUtil.string(url, Misc.Headers(1,url));
-            String s = getBase64(json),title="",uri="",atime="",ctime="",zt="";
+            String s = getBase64(json),title="",uri="",atime="",ctime="",zt="",remark="";
             JSONObject jsonObject = new JSONObject(s);
             if (jsonObject.optString("status", "").equals("success")) {
                 JSONObject o = null, o2 = null;
@@ -28,6 +28,7 @@ public class Base64Utils {
                 int z = 11, f=0;
                 int len = array.length() > z ? z : array.length();
                 for (int i = 1; i < len; i++) {
+                    remark = "";
                     o2 = new JSONObject();
                     o = (JSONObject) array.get(i);
                     atime = o.optString("available_time", "");
@@ -40,11 +41,12 @@ public class Base64Utils {
                             zt = oc.optString("title", "");
                             ctime = o.optString("insert_time", "");
                             if (zt.contains("4K")||zt.contains("4k")) {
-                                title = title + " 4K";
-                            }else if(zt.contains("1080")) title = title + " 1080P";
-                            title = title  + "/" + f + " "+ctime;
+                                remark = " 4K";
+                            }else if(zt.contains("1080")) remark = " 1080P";
+                            if(!remark.equals("")||!ctime.equals(""))remark  = "/" + remark + " "+ctime;
                             uri = o.optString("page_url", "");
                             o2.put("title", title);
+                            o2.put("remark", remark);
                             o2.put("url", "upyunso.com/"+uri);
                             a2.put(o2);
                         }

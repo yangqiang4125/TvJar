@@ -53,9 +53,10 @@ public class Upyunso extends Spider {
                     JSONObject v = arr.getJSONObject(i);
                     String id = v.getString("url");
                     String title = v.getString("title");
+                    String remark = v.getString("remark");
                     v.put("vod_id", id + "$$$" + pic + "$$$" + title);
                     v.put("vod_name", title);
-                    v.put("remark", "");
+                    v.put("vod_remarks", remark);
                     v.put("vod_pic", pic);
                     jSONArray.put(v);
                 }
