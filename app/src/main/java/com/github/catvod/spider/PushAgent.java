@@ -605,6 +605,7 @@ public class PushAgent extends Spider {
                 return result.toString();
             } else if (regexAli.matcher(url).find()) {
                 if(VodName!=null) vodAtom.put("vod_name", VodName);
+                vodAtom.put("vod_id", TextUtils.join("$$$",idInfo));
                 return getAliContent(url,vodAtom);
             } else if (url.startsWith("http://") || url.startsWith("https://")) {
                 Document doc = null;
