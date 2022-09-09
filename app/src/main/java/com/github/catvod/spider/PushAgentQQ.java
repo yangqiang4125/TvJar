@@ -124,7 +124,7 @@ public class PushAgentQQ extends Spider {
             pic = op1.optString("normal", "");
             remark = o1.optString("value", "暂无评分");
 
-            vo.put("vod_id", "");
+            vo.put("vod_id", "https://www.lgyy.cc/vodplay/45421-1-1.html" + "$$$" + pic + "$$$" + title);
             vo.put("vod_name", title);
             vo.put("vod_remarks", remark);
             vo.put("vod_pic", pic);
