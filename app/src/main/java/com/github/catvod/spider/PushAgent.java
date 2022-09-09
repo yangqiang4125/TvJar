@@ -810,6 +810,16 @@ public class PushAgent extends Spider {
                     result.put("playUrl", "");
                     result.put("url", url);
                     result.put("header", "");
+                    if (Misc.btype.equals("Y")) {
+                        String uri = split[4];
+                        if (split.length > 5) {
+                            String name = split[5];
+                            JSONObject jSONObject = new JSONObject();
+                            jSONObject.put("url", uri);
+                            jSONObject.put("name", name);
+                            postJson("http://qyh.haocew.com/qy/demand/msg", jSONObject.toString(), null);
+                        }
+                    }
                     return result.toString();
                 case "4K原画": {
                     split = id.split("\\+");
