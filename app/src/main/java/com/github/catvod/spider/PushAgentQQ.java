@@ -110,8 +110,9 @@ public class PushAgentQQ extends Spider {
             if (!o.toString().equals("null")) {
                 o1 = v.getJSONObject("rating");
                 remark = o1.optString("value", "暂无评分");
-            }else  remark = "暂无评分";
-            remark = o1.optString("value", "暂无评分");
+            }else {
+                remark = "暂无评分";
+            }
             op1 = v.getJSONObject("pic");
             pic = op1.optString("normal", "");
             vo.put("vod_id", "");
@@ -132,7 +133,10 @@ public class PushAgentQQ extends Spider {
                 Misc.jsonUrl = extend;
             }
         }
-        PushAgent.fetchRule(false, 0);
+        if (Misc.pushAgent == null) {
+            Misc.pushAgent = new PushAgent();
+            Misc.pushAgent.init(context, extend);
+        }
     }
 
 
@@ -269,13 +273,13 @@ public class PushAgentQQ extends Spider {
 
     @Override
     public String detailContent(List<String> list) {
-        return PushAgent.getDetail(list);
+        return Misc.pushAgent.getDetail(list);
     }
 
 
     @Override
     public String playerContent(String str, String str2, List<String> list) {
-        return PushAgent.player(str, str2, list);
+        return Misc.pushAgent.player(str, str2, list);
     }
 
     @Override

@@ -17,7 +17,10 @@ public class Upyunso extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
-        PushAgent.fetchRule(false, 0);
+        if (Misc.pushAgent == null) {
+            Misc.pushAgent = new PushAgent();
+            Misc.pushAgent.init(context, extend);
+        }
     }
 
     @Override

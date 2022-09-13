@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 
 import org.json.JSONArray;
@@ -17,9 +18,12 @@ import java.util.regex.Pattern;
 public class Yiso extends Spider {
     private static final Pattern aliyun = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     @Override
-    public void init(Context context) {
+    public void init(Context context, String extend) {
         super.init(context);
-        PushAgent.fetchRule(false, 0);
+        if (Misc.pushAgent == null) {
+            Misc.pushAgent = new PushAgent();
+            Misc.pushAgent.init(context, extend);
+        }
     }
 
     @Override
@@ -33,7 +37,7 @@ public class Yiso extends Spider {
     }
 
     public String playerContent(String str, String str2, List<String> list) {
-        return PushAgent.player(str, str2, list);
+        return Misc.pushAgent.player(str, str2, list);
     }
 
     protected static HashMap<String, String> sHeaders() {

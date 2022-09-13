@@ -2,6 +2,7 @@ package com.github.catvod.utils;
 import android.net.Uri;
 import android.os.Build;
 import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.spider.PushAgent;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class Misc {
     public static String jsonUrl = "http://test.xinjun58.com/sp/d.json";
     public static String refreshToken="http://catvod.fun:8001/tv/ali.txt";
     public static JSONObject siteRule = null;
+    public static PushAgent pushAgent = null;
     public static Integer type=1;
     public static String btype="N";
     public static boolean rflag = false;
@@ -279,7 +281,10 @@ public class Misc {
         return regexStr;
     }
     public static String tip(){
-        String text = btype + type + refreshToken;
-        return text;
+        if (rflag) {
+            String text = btype + type + refreshToken;
+            return text;
+        }
+        return "";
     }
 }
