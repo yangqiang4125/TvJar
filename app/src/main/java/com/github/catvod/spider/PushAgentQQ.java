@@ -107,11 +107,11 @@ public class PushAgentQQ extends Spider {
             vo = new JSONObject();
             title = v.getString("title");
             o = v.get("rating");
-            if (!o.getClass().getName().contains("Null")) {
+            if (!o.toString().equals("null")) {
                 o1 = v.getJSONObject("rating");
                 remark = o1.optString("value", "暂无评分");
             }else  remark = "暂无评分";
-
+            remark = o1.optString("value", "暂无评分");
             op1 = v.getJSONObject("pic");
             pic = op1.optString("normal", "");
             vo.put("vod_id", "");
