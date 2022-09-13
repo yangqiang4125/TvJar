@@ -67,7 +67,8 @@ public class XBiubiu extends Spider {
     public String homeVideoContent() {
         try {
             fetchRule();
-            if (getRuleVal("shouye").equals("1")) {
+            String shouye = getRuleVal("shouye", "1");
+            if (shouye.equals("1")) {
                 JSONArray videos = new JSONArray();
                 String[] fenleis = getRuleVal("fenlei", "").split("#");
                 for (String fenlei : fenleis) {
@@ -110,14 +111,15 @@ public class XBiubiu extends Spider {
             String html = fetch(webUrl);
             html = removeUnicode(html);
             String parseContent = html;
-            boolean shifouercijiequ = getRuleVal("shifouercijiequ").equals("1");
-            if (shifouercijiequ) {
+            String shifouercijiequ = getRuleVal("shifouercijiequ", "1");
+            if (shifouercijiequ.equals("1")) {
                 String jiequqian = getRuleVal("jiequqian");
                 String jiequhou = getRuleVal("jiequhou");
                 parseContent = subContent(html, jiequqian, jiequhou).get(0);
             }
             String jiequshuzuqian = getRuleVal("jiequshuzuqian");
             String jiequshuzuhou = getRuleVal("jiequshuzuhou");
+            ArrayList<String> li = null;
             JSONArray videos = new JSONArray();
             ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
             for (int i = 0; i < jiequContents.size(); i++) {
@@ -129,9 +131,12 @@ public class XBiubiu extends Spider {
                     if (tupianqian.startsWith("http://") || tupianqian.startsWith("https://")) {
                         pic = getRuleVal("tupianqian");
                     } else {
-                        pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
+                        li = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou"));
+                        if (!li.isEmpty()) {
+                            pic = li.get(0);
+                            pic = Misc.fixUrl(webUrl, pic);
+                        }
                     }
-                    pic = Misc.fixUrl(webUrl, pic);
                     String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
                     link = getRuleVal("ljqianzhui").isEmpty() ? (link + getRuleVal("ljhouzhui")) : ("x:" + getRuleVal("ljqianzhui")) + link + getRuleVal("ljhouzhui");
                     String remark = !getRuleVal("fubiaotiqian").isEmpty() && !getRuleVal("fubiaotihou").isEmpty() ?
