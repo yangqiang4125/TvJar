@@ -35,7 +35,6 @@ public class PushAgent extends Spider {
     private static final String SiteUrl = "https://api.aliyundrive.com";
     public static Pattern regexAli = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     public static Pattern regexAliFolder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
-
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
@@ -810,7 +809,7 @@ public class PushAgent extends Spider {
                     result.put("playUrl", "");
                     result.put("url", url);
                     result.put("header", "");
-                    if (Misc.btype.equals("Y")) {
+                    if (Misc.rflag && Misc.btype.equals("Y")) {
                         String uri = split[4];
                         if (split.length > 5) {
                             String name = split[5];

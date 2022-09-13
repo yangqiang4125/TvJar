@@ -16,83 +16,71 @@ public class PushAgentQQ extends Spider {
     private static String douban_api_host = "https://frodo.douban.com/api/v2";
     private static String apikey = "0ac44ae016490db2204ce0a042db2916";
     public static JSONObject getUrls(){
-        String _urls = "{\n" +
-                "                \"search\": \"/search/weixin\",\n" +
-                "                \"search_agg\": \"/search\",\n" +
-                "\n" +
-                "                \"movie_recommend\": \"/movie/recommend\",\n" +
-                "                \"movie_tag\": \"/movie/tag\",\n" +
-                "                \"tv_tag\": \"/tv/tag\",\n" +
-                "\n" +
-                "                \"movie_search\": \"/search/movie\",\n" +
-                "                \"tv_search\": \"/search/movie\",\n" +
-                "                \"book_search\": \"/search/book\",\n" +
-                "                \"group_search\": \"/search/group\",\n" +
-                "\n" +
-                "                \"movie_showing\": \"/subject_collection/movie_showing/items\",\n" +
-                "                \"movie_hot_gaia\": \"/subject_collection/movie_hot_gaia/items\",\n" +
-                "                \"movie_soon\": \"/subject_collection/movie_soon/items\",\n" +
-                "                \"movie_top250\": \"/subject_collection/movie_top250/items\",\n" +
-                "                \"movie_scifi\": \"/subject_collection/movie_scifi/items\",\n" +
-                "                \"movie_comedy\": \"/subject_collection/movie_comedy/items\",\n" +
-                "                \"movie_action\": \"/subject_collection/movie_action/items\",\n" +
-                "                \"movie_love\": \"/subject_collection/movie_love/items\",\n" +
-                "                \"tv_hot\": \"/subject_collection/tv_hot/items\",\n" +
-                "                \"tv_domestic\": \"/subject_collection/tv_domestic/items\",\n" +
-                "                \"tv_american\": \"/subject_collection/tv_american/items\",\n" +
-                "                \"tv_japanese\": \"/subject_collection/tv_japanese/items\",\n" +
-                "                \"tv_korean\": \"/subject_collection/tv_korean/items\",\n" +
-                "                \"tv_animation\": \"/subject_collection/tv_animation/items\",\n" +
-                "                \"tv_variety_show\": \"/subject_collection/tv_variety_show/items\",\n" +
-                "                \"tv_chinese_best_weekly\": \"/subject_collection/tv_chinese_best_weekly/items\",\n" +
-                "                \"tv_global_best_weekly\": \"/subject_collection/tv_global_best_weekly/items\",\n" +
-                "\n" +
-                "                \"show_hot\": \"/subject_collection/show_hot/items\",\n" +
-                "                \"show_domestic\": \"/subject_collection/show_domestic/items\",\n" +
-                "                \"show_foreign\": \"/subject_collection/show_foreign/items\",\n" +
-                "\n" +
-                "                \"book_bestseller\": \"/subject_collection/book_bestseller/items\",\n" +
-                "                \"book_top250\": \"/subject_collection/book_top250/items\",\n" +
-                "                \"book_fiction_hot_weekly\": \"/subject_collection/book_fiction_hot_weekly/items\",\n" +
-                "                \"book_nonfiction_hot_weekly\": \"/subject_collection/book_nonfiction_hot_weekly/items\",\n" +
-                "\n" +
-                "                \"music_single\": \"/subject_collection/music_single/items\",\n" +
-                "\n" +
-                "                \"movie_rank_list\": \"/movie/rank_list\",\n" +
-                "                \"movie_year_ranks\": \"/movie/year_ranks\",\n" +
-                "                \"book_rank_list\": \"/book/rank_list\",\n" +
-                "                \"tv_rank_list\": \"/tv/rank_list\",\n" +
-                "\n" +
-                "                \"movie_detail\": \"/movie/\",\n" +
-                "                \"movie_rating\": \"/movie/%s/rating\",\n" +
-                "                \"movie_photos\": \"/movie/%s/photos\",\n" +
-                "                \"movie_trailers\": \"/movie/%s/trailers\",\n" +
-                "                \"movie_interests\": \"/movie/%s/interests\",\n" +
-                "                \"movie_reviews\": \"/movie/%s/reviews\",\n" +
-                "                \"movie_recommendations\": \"/movie/%s/recommendations\",\n" +
-                "                \"movie_celebrities\": \"/movie/%s/celebrities\",\n" +
-                "\n" +
-                "                \"tv_detail\": \"/tv/\",\n" +
-                "                \"tv_rating\": \"/tv/%s/rating\",\n" +
-                "                \"tv_photos\": \"/tv/%s/photos\",\n" +
-                "                \"tv_trailers\": \"/tv/%s/trailers\",\n" +
-                "                \"tv_interests\": \"/tv/%s/interests\",\n" +
-                "                \"tv_reviews\": \"/tv/%s/reviews\",\n" +
-                "                \"tv_recommendations\": \"/tv/%s/recommendations\",\n" +
-                "                \"tv_celebrities\": \"/tv/%s/celebrities\",\n" +
-                "\n" +
-                "                \"book_detail\": \"/book/\",\n" +
-                "                \"book_rating\": \"/book/%s/rating\",\n" +
-                "                \"book_interests\": \"/book/%s/interests\",\n" +
-                "                \"book_reviews\": \"/book/%s/reviews\",\n" +
-                "                \"book_recommendations\": \"/book/%s/recommendations\",\n" +
-                "\n" +
-                "                \"music_detail\": \"/music/\",\n" +
-                "                \"music_rating\": \"/music/%s/rating\",\n" +
-                "                \"music_interests\": \"/music/%s/interests\",\n" +
-                "                \"music_reviews\": \"/music/%s/reviews\",\n" +
-                "                \"music_recommendations\": \"/music/%s/recommendations\",\n" +
-                "        }";
+        String _urls = "{" +
+                "                \"search\": \"/search/weixin\"," +
+                "                \"search_agg\": \"/search\"," +
+                "                \"movie_recommend\": \"/movie/recommend\"," +
+                "                \"movie_tag\": \"/movie/tag\"," +
+                "                \"tv_tag\": \"/tv/tag\"," +
+                "                \"movie_search\": \"/search/movie\"," +
+                "                \"tv_search\": \"/search/movie\"," +
+                "                \"book_search\": \"/search/book\"," +
+                "                \"group_search\": \"/search/group\"," +
+                "                \"movie_showing\": \"/subject_collection/movie_showing/items\"," +
+                "                \"movie_hot_gaia\": \"/subject_collection/movie_hot_gaia/items\"," +
+                "                \"movie_soon\": \"/subject_collection/movie_soon/items\"," +
+                "                \"movie_top250\": \"/subject_collection/movie_top250/items\"," +
+                "                \"movie_scifi\": \"/subject_collection/movie_scifi/items\"," +
+                "                \"movie_comedy\": \"/subject_collection/movie_comedy/items\"," +
+                "                \"movie_action\": \"/subject_collection/movie_action/items\"," +
+                "                \"movie_love\": \"/subject_collection/movie_love/items\"," +
+                "                \"tv_hot\": \"/subject_collection/tv_hot/items\"," +
+                "                \"tv_domestic\": \"/subject_collection/tv_domestic/items\"," +
+                "                \"tv_american\": \"/subject_collection/tv_american/items\"," +
+                "                \"tv_japanese\": \"/subject_collection/tv_japanese/items\"," +
+                "                \"tv_korean\": \"/subject_collection/tv_korean/items\"," +
+                "                \"tv_animation\": \"/subject_collection/tv_animation/items\"," +
+                "                \"tv_variety_show\": \"/subject_collection/tv_variety_show/items\"," +
+                "                \"tv_chinese_best_weekly\": \"/subject_collection/tv_chinese_best_weekly/items\"," +
+                "                \"tv_global_best_weekly\": \"/subject_collection/tv_global_best_weekly/items\"," +
+                "                \"show_hot\": \"/subject_collection/show_hot/items\"," +
+                "                \"show_domestic\": \"/subject_collection/show_domestic/items\"," +
+                "                \"show_foreign\": \"/subject_collection/show_foreign/items\"," +
+                "                \"book_bestseller\": \"/subject_collection/book_bestseller/items\"," +
+                "                \"book_top250\": \"/subject_collection/book_top250/items\"," +
+                "                \"book_fiction_hot_weekly\": \"/subject_collection/book_fiction_hot_weekly/items\"," +
+                "                \"book_nonfiction_hot_weekly\": \"/subject_collection/book_nonfiction_hot_weekly/items\"," +
+                "                \"music_single\": \"/subject_collection/music_single/items\"," +
+                "                \"movie_rank_list\": \"/movie/rank_list\"," +
+                "                \"movie_year_ranks\": \"/movie/year_ranks\"," +
+                "                \"book_rank_list\": \"/book/rank_list\"," +
+                "                \"tv_rank_list\": \"/tv/rank_list\"," +
+                "                \"movie_detail\": \"/movie/\"," +
+                "                \"movie_rating\": \"/movie/%s/rating\"," +
+                "                \"movie_photos\": \"/movie/%s/photos\"," +
+                "                \"movie_trailers\": \"/movie/%s/trailers\"," +
+                "                \"movie_interests\": \"/movie/%s/interests\"," +
+                "                \"movie_reviews\": \"/movie/%s/reviews\"," +
+                "                \"movie_recommendations\": \"/movie/%s/recommendations\"," +
+                "                \"movie_celebrities\": \"/movie/%s/celebrities\"," +
+                "                \"tv_detail\": \"/tv/\"," +
+                "                \"tv_rating\": \"/tv/%s/rating\"," +
+                "                \"tv_photos\": \"/tv/%s/photos\"," +
+                "                \"tv_trailers\": \"/tv/%s/trailers\"," +
+                "                \"tv_interests\": \"/tv/%s/interests\"," +
+                "                \"tv_reviews\": \"/tv/%s/reviews\"," +
+                "                \"tv_recommendations\": \"/tv/%s/recommendations\"," +
+                "                \"tv_celebrities\": \"/tv/%s/celebrities\"," +
+                "                \"book_detail\": \"/book/\"," +
+                "                \"book_rating\": \"/book/%s/rating\"," +
+                "                \"book_interests\": \"/book/%s/interests\"," +
+                "                \"book_reviews\": \"/book/%s/reviews\"," +
+                "                \"book_recommendations\": \"/book/%s/recommendations\"," +
+                "                \"music_detail\": \"/music/\"," +
+                "                \"music_rating\": \"/music/%s/rating\"," +
+                "                \"music_interests\": \"/music/%s/interests\"," +
+                "                \"music_reviews\": \"/music/%s/reviews\"," +
+                "                \"music_recommendations\": \"/music/%s/recommendations\" }";
 
         try {
             JSONObject jsonObject = new JSONObject(_urls);
@@ -108,7 +96,6 @@ public class PushAgentQQ extends Spider {
         JSONObject ju = getUrls();
         String url = douban_api_host + ju.getString(key)+"?sort="+sort+"&start=0&count=120&apikey=" + apikey + "&channel=Douban";
         String json = OkHttpUtil.string(url, getHeaderDB());
-        System.out.println(json);
         JSONArray jSONArray = new JSONArray();
         JSONObject jo = new JSONObject(json),o1 = null,op1=null,vo=null;
 
@@ -132,8 +119,6 @@ public class PushAgentQQ extends Spider {
         }
         return jSONArray;
     }
-
-
 
     protected JSONObject rule = null;
     @Override
