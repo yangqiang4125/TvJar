@@ -26,7 +26,7 @@ public class Upyunso extends Spider {
     @Override
     public String detailContent(List<String> list) {
         try {
-            return PushAgent.getDetail(list);
+            return Misc.pushAgent.getDetail(list);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
@@ -42,7 +42,7 @@ public class Upyunso extends Spider {
 
     @Override
     public String playerContent(String str, String str2, List<String> list) {
-        return PushAgent.player(str, str2, list);
+        return Misc.pushAgent.player(str, str2, list);
     }
 
     @Override

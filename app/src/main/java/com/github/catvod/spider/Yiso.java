@@ -29,7 +29,7 @@ public class Yiso extends Spider {
     @Override
     public String detailContent(List<String> list) {
         try {
-            return PushAgent.getDetail(list);
+            return Misc.pushAgent.getDetail(list);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }
