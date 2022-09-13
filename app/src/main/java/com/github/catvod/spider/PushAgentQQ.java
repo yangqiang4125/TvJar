@@ -14,7 +14,6 @@ import java.util.List;
 
 public class PushAgentQQ extends Spider {
     private static String douban_api_host = "https://frodo.douban.com/api/v2";
-    private static String apikey = "0ac44ae016490db2204ce0a042db2916";
     public static JSONObject getUrls(){
         String _urls = "{" +
                 "                \"search\": \"/search/weixin\"," +
@@ -91,26 +90,30 @@ public class PushAgentQQ extends Spider {
         return null;
     }
 
-    public static JSONArray getDouban(String key,String sort) throws JSONException {
+    public static JSONArray getDouban(String key,String sort,Integer count) throws JSONException {
         if(sort==null)sort="U";
+        if(count ==null) count =120;
         JSONObject ju = getUrls();
-        String url = douban_api_host + ju.getString(key)+"?sort="+sort+"&start=0&count=120&apikey=" + apikey + "&channel=Douban";
+        String url = douban_api_host + ju.getString(key)+"?sort="+sort+"&start=0&count="+count+"&apikey=" + Misc.apikey + "&channel=Douban";
         String json = OkHttpUtil.string(url, getHeaderDB());
         JSONArray jSONArray = new JSONArray();
         JSONObject jo = new JSONObject(json),o1 = null,op1=null,vo=null;
 
         JSONArray ay = jo.getJSONArray("subject_collection_items");
         String remark = "", title = "",pic="";
-
+        Object o = null;
         for (int i = 0; i < ay.length(); i++) {
             JSONObject v = ay.getJSONObject(i);
             vo = new JSONObject();
             title = v.getString("title");
-            o1 = v.getJSONObject("rating");
+            o = v.get("rating");
+            if (!o.getClass().getName().contains("Null")) {
+                o1 = v.getJSONObject("rating");
+                remark = o1.optString("value", "暂无评分");
+            }else  remark = "暂无评分";
+
             op1 = v.getJSONObject("pic");
             pic = op1.optString("normal", "");
-            remark = o1.optString("value", "暂无评分");
-
             vo.put("vod_id", "");
             vo.put("vod_name", title);
             vo.put("vod_remarks", remark);
@@ -224,8 +227,10 @@ public class PushAgentQQ extends Spider {
                 String [] arr = tid.split("-");
                 String key = arr[1];
                 String sort = null;
+                Integer count = 120;
                 if(arr.length>2)sort = arr[2];
-                videos = getDouban(key, sort);
+                if(arr.length>3)count = Integer.parseInt(arr[3]);
+                videos = getDouban(key, sort, count);
             }else{
                 if (jo == null) jo = PushAgent.fetchRule(true,1);
                 JSONArray array = jo.getJSONArray(tid);

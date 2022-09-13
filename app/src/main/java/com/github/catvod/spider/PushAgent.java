@@ -70,6 +70,7 @@ public class PushAgent extends Spider {
                     }
                     Misc.type = Misc.siteRule.optInt("ua", 1);
                     Misc.btype = Misc.siteRule.optString("btype", "N");
+                    Misc.apikey = Misc.siteRule.optString("apikey", "0ac44ae016490db2204ce0a042db2916");
                 }
                 return jo;
             }
