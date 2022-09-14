@@ -651,13 +651,21 @@ public class PushAgent extends Spider {
                         detailRex = "href(.*"+detailRex+"-\\d+-\\d+."+hz+")\"";
                     }
                     if (detailRex!=null) {
-                        mh = Pattern.compile(detailRex).matcher(content);
-                        while (mh.find()&&fb){
-                            fb=false;
-                            String u = mh.group(1);
-                            u = u.replaceAll(".*\"(.*)","$1");
-                            url = baseUrl+u;
+                        String _con = content,u="";
+                        aslist = Misc.subContent(content, "<a", "播放</a>");
+                        if (!aslist.isEmpty()) {
+                            _con = aslist.get(0);
+                            // class="fed-deta-play fed-rims-info fed-btns-info fed-btns-green fed-col-xs4" href="/p/540541-2-1.html">在线
+                            u = _con.replaceAll(".*href=\"(.*"+hz+")\".*","$1");
+                        }else {
+                            mh = Pattern.compile(detailRex).matcher(_con);
+                            while (mh.find()&&fb){
+                                fb=false;
+                                u = mh.group(1);
+                                u = u.replaceAll(".*\"(.*)","$1");
+                            }
                         }
+                        url = baseUrl+u;
                     }
                     //https://dyxs13.com/paly-47817-10-1/
                     if (!hz.equals("")) {
