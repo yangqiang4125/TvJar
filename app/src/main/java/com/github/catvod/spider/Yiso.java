@@ -49,7 +49,6 @@ public class Yiso extends Spider {
     @Override
     public String searchContent(String key, boolean quick) {
         try {
-            PushAgent.getRefreshTk();
             HashMap<String, String> LT = sHeaders();
             String url = "https://yiso.fun/api/search?name=" + URLEncoder.encode(key) + "&from=ali";
 

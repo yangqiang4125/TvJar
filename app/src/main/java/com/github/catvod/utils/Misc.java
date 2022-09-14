@@ -22,7 +22,7 @@ public class Misc {
     public static PushAgent pushAgent = null;
     public static Integer type=1;
     public static String btype="N";
-    public static boolean rflag = true;
+    public static boolean rflag = false;
     public static String apikey = "0ac44ae016490db2204ce0a042db2916";
     public static boolean isVip(String url) {
         // 适配2.0.6的调用应用内解析列表的支持, 需要配合直连分析一起使用，参考cjt影视和极品直连

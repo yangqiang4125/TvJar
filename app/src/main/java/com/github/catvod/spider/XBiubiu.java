@@ -122,10 +122,14 @@ public class XBiubiu extends Spider {
             ArrayList<String> li = null;
             JSONArray videos = new JSONArray();
             ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
+            String sousuohouzhui = getRuleVal("sousuohouzhui");
+            String lianjieqian = getRuleVal("lianjieqian");
+            String lianjiehou = getRuleVal("lianjiehou");
+            String link = null;
             for (int i = 0; i < jiequContents.size(); i++) {
                 try {
                     String jiequContent = jiequContents.get(i);
-                    String title = removeHtml(subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0));
+                    String title = removeHtml(subContent(jiequContent, "html\" >", getRuleVal("biaotihou")).get(0));
                     String pic = "";
                     String tupianqian = getRuleVal("tupianqian").toLowerCase();
                     if (tupianqian.startsWith("http://") || tupianqian.startsWith("https://")) {
@@ -137,8 +141,10 @@ public class XBiubiu extends Spider {
                             pic = Misc.fixUrl(webUrl, pic);
                         }
                     }
-                    String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
-                    link = getRuleVal("ljqianzhui").isEmpty() ? (link + getRuleVal("ljhouzhui")) : ("x:" + getRuleVal("ljqianzhui")) + link + getRuleVal("ljhouzhui");
+                    if(!lianjiehou.equals("")) {
+                        link = subContent(jiequContent, lianjieqian, lianjiehou).get(0);
+                        link = getRuleVal("ljqianzhui").isEmpty() ? (link + getRuleVal("ljhouzhui")) : ("x:" + getRuleVal("ljqianzhui")) + link + getRuleVal("ljhouzhui");
+                    } else link = jiequContent.replaceAll(".*\"(.*"+sousuohouzhui+".*?)\".*","$1");
                     String remark = !getRuleVal("fubiaotiqian").isEmpty() && !getRuleVal("fubiaotihou").isEmpty() ?
                             removeHtml(subContent(jiequContent, getRuleVal("fubiaotiqian"), getRuleVal("fubiaotihou")).get(0)) : "";
                     JSONObject v = new JSONObject();
@@ -163,6 +169,7 @@ public class XBiubiu extends Spider {
         }
         return null;
     }
+
     private static String removeUnicode(String str) {
         Pattern pattern = Pattern.compile("(\\\\u(\\w{4}))");
         Matcher matcher = pattern.matcher(str);
