@@ -125,7 +125,7 @@ public class PushAgent extends Spider {
         return callback.getResult();
     }
 
-    private static void getRefreshTk() {
+    public static void getRefreshTk() {
         long timeSys = Time();
         if (accessToken.isEmpty() || timeToken - timeSys <= 600) {
             try {
@@ -793,6 +793,7 @@ public class PushAgent extends Spider {
                     } else result.put("header", Misc.jHeaders(Misc.type,id).toString());
                     return result.toString();
                 }
+                case "magnet":
                 case "player": {
                     result.put("parse", 0);
                     result.put("playUrl", "");
@@ -801,7 +802,6 @@ public class PushAgent extends Spider {
                     return result.toString();
                 }
                 case "AliYun":
-                    getRefreshTk();
                     String[] split = id.split("\\+");
                     String str3 = split[0];
                     String str5 = split[2];

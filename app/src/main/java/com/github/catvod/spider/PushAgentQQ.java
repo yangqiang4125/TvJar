@@ -133,10 +133,6 @@ public class PushAgentQQ extends Spider {
                 Misc.jsonUrl = extend;
             }
         }
-        if (Misc.pushAgent == null) {
-            Misc.pushAgent = new PushAgent();
-            Misc.pushAgent.init(context, extend);
-        }
     }
 
 
@@ -273,13 +269,13 @@ public class PushAgentQQ extends Spider {
 
     @Override
     public String detailContent(List<String> list) {
-        return Misc.pushAgent.getDetail(list);
+        return PushAgent.getDetail(list);
     }
 
 
     @Override
     public String playerContent(String str, String str2, List<String> list) {
-        return Misc.pushAgent.player(str, str2, list);
+        return PushAgent.player(str, str2, list);
     }
 
     @Override

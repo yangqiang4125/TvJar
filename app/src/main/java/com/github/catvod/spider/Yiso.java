@@ -20,16 +20,12 @@ public class Yiso extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context);
-        if (Misc.pushAgent == null) {
-            Misc.pushAgent = new PushAgent();
-            Misc.pushAgent.init(context, extend);
-        }
     }
 
     @Override
     public String detailContent(List<String> list) {
         try {
-            return Misc.pushAgent.getDetail(list);
+            return PushAgent.getDetail(list);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }
@@ -37,7 +33,7 @@ public class Yiso extends Spider {
     }
 
     public String playerContent(String str, String str2, List<String> list) {
-        return Misc.pushAgent.player(str, str2, list);
+        return PushAgent.player(str, str2, list);
     }
 
     protected static HashMap<String, String> sHeaders() {
@@ -52,7 +48,7 @@ public class Yiso extends Spider {
     @Override
     public String searchContent(String key, boolean quick) {
         try {
-            HashMap hashMap = new HashMap();
+            PushAgent.getRefreshTk();
             HashMap<String, String> LT = sHeaders();
             String url = "https://yiso.fun/api/search?name=" + URLEncoder.encode(key) + "&from=ali";
 
@@ -62,7 +58,6 @@ public class Yiso extends Spider {
 
             JSONObject result = new JSONObject();
             JSONArray videos = new JSONArray();
-
             for (int i = 0; i < list.length(); i++) {
                 JSONObject jSONObject = list.getJSONObject(i);
                 String sourceName = jSONObject.getJSONArray("fileInfos").getJSONObject(0).getString("fileName");
