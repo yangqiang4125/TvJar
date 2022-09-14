@@ -1,34 +1,14 @@
 package com.github.catvod.spider;
 
-import android.content.Context;
-import com.github.catvod.crawler.Spider;
 import com.github.catvod.parser.Base64Utils;
-import com.github.catvod.utils.Misc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
-import java.util.List;
 
 
-public class Upyunso extends Spider {
+public class Upyunso extends PushAgent {
     private static String b = "https://www.upyunso.com/";
-
-    @Override
-    public void init(Context context, String extend) {
-        super.init(context, extend);
-        PushAgent.fetchRule(false, 0);
-    }
-
-    @Override
-    public String detailContent(List<String> list) {
-        try {
-            return PushAgent.getDetail(list);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
 
     public static String getRealUrl(String url){
         if (url.contains("upyunso.com/download")) {
@@ -38,14 +18,8 @@ public class Upyunso extends Spider {
     }
 
     @Override
-    public String playerContent(String str, String str2, List<String> list) {
-        return PushAgent.player(str, str2, list);
-    }
-
-    @Override
     public String searchContent(String key, boolean z) {
         try {
-            PushAgent.getRefreshTk();
             JSONArray jSONArray = new JSONArray();
             key = URLEncoder.encode(key);
             JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key+"&page=1");

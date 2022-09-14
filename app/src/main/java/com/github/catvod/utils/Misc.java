@@ -19,7 +19,6 @@ public class Misc {
     public static String jsonUrl = "http://test.xinjun58.com/sp/d.json";
     public static String refreshToken="http://catvod.fun:8001/tv/ali.txt";
     public static JSONObject siteRule = null;
-    public static PushAgent pushAgent = null;
     public static Integer type=1;
     public static String btype="N";
     public static boolean rflag = false;

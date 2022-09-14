@@ -1,41 +1,16 @@
 package com.github.catvod.spider;
 
-import android.content.Context;
-
-import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
-import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Pattern;
 
-public class Yiso extends Spider {
+public class Yiso extends PushAgent {
     private static final Pattern aliyun = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
-    @Override
-    public void init(Context context, String extend) {
-        super.init(context);
-        PushAgent.fetchRule(false, 0);
-    }
-
-    @Override
-    public String detailContent(List<String> list) {
-        try {
-            return PushAgent.getDetail(list);
-        } catch (Exception e) {
-            SpiderDebug.log(e);
-        }
-        return "";
-    }
-
-    public String playerContent(String str, String str2, List<String> list) {
-        return PushAgent.player(str, str2, list);
-    }
 
     protected static HashMap<String, String> sHeaders() {
         HashMap<String, String> headers = new HashMap<>();
@@ -49,6 +24,7 @@ public class Yiso extends Spider {
     @Override
     public String searchContent(String key, boolean quick) {
         try {
+            PushAgent.getRefreshTk();
             HashMap<String, String> LT = sHeaders();
             String url = "https://yiso.fun/api/search?name=" + URLEncoder.encode(key) + "&from=ali";
 
