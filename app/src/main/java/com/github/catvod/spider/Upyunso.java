@@ -17,6 +17,7 @@ public class Upyunso extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
+        PushAgent.fetchRule(false, 0);
     }
 
     @Override
@@ -44,6 +45,7 @@ public class Upyunso extends Spider {
     @Override
     public String searchContent(String key, boolean z) {
         try {
+            PushAgent.getRefreshTk();
             JSONArray jSONArray = new JSONArray();
             key = URLEncoder.encode(key);
             JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key+"&page=1");

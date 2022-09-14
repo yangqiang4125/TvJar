@@ -133,6 +133,7 @@ public class PushAgentQQ extends Spider {
                 Misc.jsonUrl = extend;
             }
         }
+        PushAgent.fetchRule(false, 0);
     }
 
 

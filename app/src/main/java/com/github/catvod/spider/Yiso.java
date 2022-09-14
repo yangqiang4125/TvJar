@@ -20,6 +20,7 @@ public class Yiso extends Spider {
     @Override
     public void init(Context context, String extend) {
         super.init(context);
+        PushAgent.fetchRule(false, 0);
     }
 
     @Override
