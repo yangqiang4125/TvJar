@@ -122,6 +122,8 @@ public class XBiubiu extends Spider {
             ArrayList<String> li = null;
             JSONArray videos = new JSONArray();
             ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
+            String biaotiqian = getRuleVal("biaotiqian");
+            String biaotihou = getRuleVal("biaotihou");
             String sousuohouzhui = getRuleVal("sousuohouzhui");
             String lianjieqian = getRuleVal("lianjieqian");
             String lianjiehou = getRuleVal("lianjiehou");
@@ -129,7 +131,7 @@ public class XBiubiu extends Spider {
             for (int i = 0; i < jiequContents.size(); i++) {
                 try {
                     String jiequContent = jiequContents.get(i);
-                    String title = removeHtml(subContent(jiequContent, "html\" >", getRuleVal("biaotihou")).get(0));
+                    String title = removeHtml(subContent(jiequContent, biaotiqian, biaotihou).get(0));
                     String pic = "";
                     String tupianqian = getRuleVal("tupianqian").toLowerCase();
                     if (tupianqian.startsWith("http://") || tupianqian.startsWith("https://")) {
@@ -226,7 +228,7 @@ public class XBiubiu extends Spider {
                             String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
                             vodItems.add(title + "$" + link);
                         }
-                        playList.add(0, android.text.TextUtils.join("#", vodItems));
+                        playList.add(0, TextUtils.join("#", vodItems));
                     } catch (Throwable th) {
                         th.printStackTrace();
                         break;
@@ -306,7 +308,7 @@ public class XBiubiu extends Spider {
                     playFrom.add("播放列表" + (i + 1));
                 }
 
-                String vod_play_from = android.text.TextUtils.join("$$$", playFrom);
+                String vod_play_from = TextUtils.join("$$$", playFrom);
                 String vod_play_url = TextUtils.join("$$$", playList);
                 vod.put("vod_play_from", vod_play_from);
                 vod.put("vod_play_url", vod_play_url);
