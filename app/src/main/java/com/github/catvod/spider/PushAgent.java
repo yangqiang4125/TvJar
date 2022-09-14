@@ -492,7 +492,7 @@ public class PushAgent extends Spider {
                             String name = i+1+"";
                             vodItems.add(name + "$" + id);
                         }
-                        String playList = TextUtils.join("#", vodItems);
+                        String playList = android.text.TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     }
                 } else {
@@ -530,7 +530,7 @@ public class PushAgent extends Spider {
                             vodItems.add(name + "$" + id);
                         }
                     }
-                    String playList = TextUtils.join("#", vodItems);
+                    String playList = android.text.TextUtils.join("#", vodItems);
                     vodAtom.put("vod_play_url", playList);
                 } else {
                     vodAtom.put("vod_play_url", "立即播放$" + url);
@@ -549,7 +549,7 @@ public class PushAgent extends Spider {
                 Matcher mgtv1 = mgtv.matcher(url);
                 if (mgtv1.find()) {
                     String Ep = "https://pcweb.api.mgtv.com/episode/list?video_id=" + mgtv1.group(2);
-                    JSONObject Data = new JSONObject(OkHttpUtil.string(Ep, getHeaders()));
+                    JSONObject Data = new JSONObject(OkHttpUtil.string(Ep, Misc.Headers(0)));
                     VodName = Data.getJSONObject("data").getJSONObject("info").getString("title");
                     JSONArray a = new JSONArray(Data.getJSONObject("data").getString("list"));
                     if (a.length() > 0) {
@@ -564,7 +564,7 @@ public class PushAgent extends Spider {
                                 vodItems.add(VodName + "$" + VodId);
                             }
                         }
-                        String playList = TextUtils.join("#", vodItems);
+                        String playList = android.text.TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     } else {
                         vodAtom.put("vod_play_url", "立即播放$" + url);
@@ -602,14 +602,13 @@ public class PushAgent extends Spider {
                 return result.toString();
             } else if (regexAli.matcher(url).find()) {
                 if(VodName!=null) vodAtom.put("vod_name", VodName);
-                vodAtom.put("vod_id", TextUtils.join("$$$",idInfo));
+                vodAtom.put("vod_id", android.text.TextUtils.join("$$$",idInfo));
                 return getAliContent(url,vodAtom);
             } else if (url.startsWith("http://") || url.startsWith("https://")) {
                 Document doc = null;
                 String baseUrl = url.replaceAll("(^https?://.*?)(:\\d+)?/.*$", "$1");//https://www.dyk9.com
                 Pattern urlder = Pattern.compile(".*(\\d+.html|\\d+/)$");
                 Pattern urlder1 = Pattern.compile(".*-?(\\d+)/");
-                Pattern urlder2 = Pattern.compile(".*-\\d+-\\d+");
                 String content=null,uri=null,a=null,b=null,hz="",text=null,prefxs=null,detailRex=null;
                 boolean fb = true;
                 Matcher mh = null;
@@ -646,16 +645,18 @@ public class PushAgent extends Spider {
                     //prefxUrl = prefxUrl.replace(baseUrl, "");//  /vod/play/70631-1
                     if(!url.contains("-")){
                         detailRex = url.replaceAll(".*/(\\d+)\\..*", "$1");
-                        detailRex = "href=\"(.*"+detailRex+"-.*"+hz+")\"";
+                        detailRex = "href(.*"+detailRex+"-\\d+-\\d+."+hz+")\"";
                     }else if(url.split("-").length<2&&urlder1.matcher(url).find()){
                         detailRex = url.replaceAll(".*-(\\d+)"+hz, "$1");
-                        detailRex = "href=\"(.*"+detailRex+"-.*"+hz+")\"";
+                        detailRex = "href(.*"+detailRex+"-\\d+-\\d+."+hz+")\"";
                     }
                     if (detailRex!=null) {
                         mh = Pattern.compile(detailRex).matcher(content);
                         while (mh.find()&&fb){
                             fb=false;
-                            url = baseUrl+mh.group(1);
+                            String u = mh.group(1);
+                            u = u.replaceAll(".*\"(.*)","$1");
+                            url = baseUrl+u;
                         }
                     }
                     //https://dyxs13.com/paly-47817-10-1/
