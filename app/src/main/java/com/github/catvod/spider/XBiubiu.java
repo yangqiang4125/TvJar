@@ -2,16 +2,15 @@ package com.github.catvod.spider;
 
 import android.content.Context;
 import android.text.TextUtils;
-
-import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
-
+import okhttp3.Call;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.Call;
-import org.jsoup.Jsoup;
-
-public class XBiubiu extends Spider {
+public class XBiubiu extends PushAgent {
     @Override
     public void init(Context context) {
         super.init(context);
@@ -31,6 +27,7 @@ public class XBiubiu extends Spider {
     public void init(Context context, String extend) {
         super.init(context, extend);
         this.ext = extend;
+        fetchRule(false,0);
     }
 
     @Override
@@ -318,7 +315,7 @@ public class XBiubiu extends Spider {
                 list.put(vod);
                 result.put("list", list);
                 return result.toString();
-            } else return PushAgent.getDetail(ids);
+            } else return getDetail(ids);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }
