@@ -197,6 +197,7 @@ public class XBiubiu extends PushAgent {
             String jiequshuzuqian = getRuleVal("bfjiequshuzuqian");
             boolean bfjiequshuzuqian = jiequshuzuqian.equals("");
             if(!bfjiequshuzuqian){
+                String baseUrl = getRuleVal("url");
                 String[] idInfo = ids.get(0).split("\\$\\$\\$");
                 String webUrl = idInfo[0];
                 String html = fetch(webUrl);
@@ -223,7 +224,7 @@ public class XBiubiu extends PushAgent {
                         for (int j = 0; j < lastParseContents.size(); j++) {
                             String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
                             String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
-                            vodItems.add(title + "$" + link);
+                            vodItems.add(title + "$" + baseUrl + link);
                         }
                         playList.add(0, TextUtils.join("#", vodItems));
                     } catch (Throwable th) {
@@ -288,7 +289,7 @@ public class XBiubiu extends PushAgent {
                 }
 
                 JSONObject vod = new JSONObject();
-                vod.put("vod_id",  webUrl);
+                vod.put("vod_id", ids.get(0));
                 vod.put("vod_name", title);
                 vod.put("vod_pic", cover);
                 vod.put("type_name", category);
@@ -315,7 +316,7 @@ public class XBiubiu extends PushAgent {
                 list.put(vod);
                 result.put("list", list);
                 return result.toString();
-            } else return getDetail(ids);
+            } else return PushAgent.getDetail(ids);
         } catch (Exception e) {
             SpiderDebug.log(e);
         }
