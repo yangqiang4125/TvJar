@@ -322,30 +322,13 @@ public class XBiubiu extends PushAgent {
         return "";
     }
 
-
-    @Override
-    public String playerContent(String flag, String id, List<String> vipFlags) {
-        try {
-            fetchRule();
-            String webUrl = getRuleVal("url") + id;
-            JSONObject result = new JSONObject();
-            result.put("parse", 1);
-            result.put("playUrl", "");
-            result.put("url", webUrl);
-            result.put("header", Misc.jHeaders(1,webUrl).toString());
-            return result.toString();
-        } catch (Exception e) {
-            SpiderDebug.log(e);
-        }
-        return "";
-    }
-
     @Override
     public String searchContent(String key, boolean quick) {
         try {
             fetchRule();
             boolean ssmoshiJson = getRuleVal("ssmoshi").equals("0");
-            String webUrlTmp = getRuleVal("url") + getRuleVal("sousuoqian") + key + getRuleVal("sousuohou");
+            String baseUrl = getRuleVal("url");
+            String webUrlTmp = baseUrl + getRuleVal("sousuoqian") + key + getRuleVal("sousuohou");
             String webUrl = webUrlTmp.split(";")[0];
             String webContent = webUrlTmp.contains(";post") ? fetchPost(webUrl) : fetch(webUrl);
             JSONObject result = new JSONObject();
@@ -360,7 +343,7 @@ public class XBiubiu extends PushAgent {
                     String pic = vod.optString(getRuleVal("jspic")).trim();
                     pic = Misc.fixUrl(webUrl, pic);
                     JSONObject v = new JSONObject();
-                    v.put("vod_id", name + "$$$" + pic + "$$$" + getRuleVal("sousuohouzhui") + id);
+                    v.put("vod_id", baseUrl+getRuleVal("sousuohouzhui") + id + "$$$" + pic + "$$$" + name);
                     v.put("vod_name", name);
                     v.put("vod_pic", pic);
                     v.put("vod_remarks", "");
@@ -385,7 +368,7 @@ public class XBiubiu extends PushAgent {
                         pic = Misc.fixUrl(webUrl, pic);
                         String link = subContent(jiequContent, getRuleVal("sslianjieqian"), getRuleVal("sslianjiehou")).get(0);
                         JSONObject v = new JSONObject();
-                        v.put("vod_id", title + "$$$" + pic + "$$$" + link);
+                        v.put("vod_id", baseUrl+link + "$$$" + pic + "$$$" + title);
                         v.put("vod_name", title);
                         v.put("vod_pic", pic);
                         v.put("vod_remarks", "");
@@ -458,27 +441,5 @@ public class XBiubiu extends PushAgent {
 
     private ArrayList<String> subContent(String content, String startFlag, String endFlag) {
         return Misc.subContent(content,startFlag,endFlag);
-    }
-
-    //修复软件不支持的格式无法嗅探的问题
-    @Override
-    public boolean manualVideoCheck() {
-        return true;
-    }
-
-    private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"};
-
-    @Override
-    public boolean isVideoFormat(String url) {
-        url = url.toLowerCase();
-        if (url.contains("=http") || url.contains("=https%3a%2f") || url.contains("=http%3a%2f")) {
-            return false;
-        }
-        for (String format : videoFormatList) {
-            if (url.contains(format)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -844,7 +844,7 @@ public class PushAgent extends Spider {
                     return result.toString();
                 }
             }
-            if(flag.startsWith("嗅探")){
+            if(flag.startsWith("嗅探")||flag.startsWith("播放")){
                 result.put("header", Misc.jHeaders(Misc.type,id).toString());
             }
             if(id.contains("b23.tv"))result.put("header", Misc.jHeaders(1,id).toString());
