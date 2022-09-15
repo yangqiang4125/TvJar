@@ -492,7 +492,7 @@ public class PushAgent extends Spider {
                             String name = i+1+"";
                             vodItems.add(name + "$" + id);
                         }
-                        String playList = android.text.TextUtils.join("#", vodItems);
+                        String playList = TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     }
                 } else {
@@ -530,7 +530,7 @@ public class PushAgent extends Spider {
                             vodItems.add(name + "$" + id);
                         }
                     }
-                    String playList = android.text.TextUtils.join("#", vodItems);
+                    String playList = TextUtils.join("#", vodItems);
                     vodAtom.put("vod_play_url", playList);
                 } else {
                     vodAtom.put("vod_play_url", "立即播放$" + url);
@@ -564,7 +564,7 @@ public class PushAgent extends Spider {
                                 vodItems.add(VodName + "$" + VodId);
                             }
                         }
-                        String playList = android.text.TextUtils.join("#", vodItems);
+                        String playList = TextUtils.join("#", vodItems);
                         vodAtom.put("vod_play_url", playList);
                     } else {
                         vodAtom.put("vod_play_url", "立即播放$" + url);
@@ -602,7 +602,7 @@ public class PushAgent extends Spider {
                 return result.toString();
             } else if (regexAli.matcher(url).find()) {
                 if(VodName!=null) vodAtom.put("vod_name", VodName);
-                vodAtom.put("vod_id", android.text.TextUtils.join("$$$",idInfo));
+                vodAtom.put("vod_id", TextUtils.join("$$$",idInfo));
                 return getAliContent(url,vodAtom);
             } else if (url.startsWith("http://") || url.startsWith("https://")) {
                 Document doc = null;

@@ -288,7 +288,7 @@ public class XBiubiu extends PushAgent {
                 }
 
                 JSONObject vod = new JSONObject();
-                vod.put("vod_id", ids.get(0));
+                vod.put("vod_id",  webUrl);
                 vod.put("vod_name", title);
                 vod.put("vod_pic", cover);
                 vod.put("type_name", category);
