@@ -24,6 +24,11 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+/**6161-自动生成阿里云链接 61-默认阿里云播放 2-默认4K播放
+ * TODO(阿里云 各种详情页面解析)
+ * @author yangqiang
+ * @date 2022/9/19 9:50
+ */
 
 public class PushAgent extends Spider {
     private static long timeToken = 0;
@@ -426,7 +431,7 @@ public class PushAgent extends Spider {
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                vodAtom.put("vod_play_from", "4K原画$$$AliYun");
+                vodAtom.put("vod_play_from", "AliYun$$$4K原画");
             }
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();

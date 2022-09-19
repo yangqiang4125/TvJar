@@ -20,6 +20,7 @@ public class Upyunso extends PushAgent {
     @Override
     public String searchContent(String key, boolean z) {
         try {
+            fetchRule(false, 0);
             JSONArray jSONArray = new JSONArray();
             key = URLEncoder.encode(key);
             JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso.com/search?keyword=" + key+"&page=1");
