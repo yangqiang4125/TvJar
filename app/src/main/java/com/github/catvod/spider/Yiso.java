@@ -24,7 +24,6 @@ public class Yiso extends PushAgent {
     @Override
     public String searchContent(String key, boolean quick) {
         try {
-            fetchRule(false, 0);
             HashMap<String, String> LT = sHeaders();
             String url = "https://yiso.fun/api/search?name=" + URLEncoder.encode(key) + "&from=ali";
 

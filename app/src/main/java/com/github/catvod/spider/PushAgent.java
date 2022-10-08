@@ -46,7 +46,7 @@ public class PushAgent extends Spider {
         if (extend != null && !extend.equals("")) {
             if (extend.startsWith("http")) {
                 Misc.jsonUrl = extend;
-            }
+            }else Misc.refreshToken = extend;
         }
         fetchRule(false,0);
     }
