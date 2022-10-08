@@ -52,9 +52,11 @@ public class PushAgent extends Spider {
     }
 
     public static void getToken(String token){
-        if (token.startsWith("http")) {
-            Misc.refreshToken = OkHttpUtil.string(token, null);
-        }else Misc.refreshToken = token;
+        if(Misc.refreshToken.equals("")){
+            if (token.startsWith("http")) {
+                Misc.refreshToken = OkHttpUtil.string(token, null);
+            }else Misc.refreshToken = token;
+        }
     }
 
     public static JSONObject fetchRule(boolean flag,int t) {
@@ -431,7 +433,7 @@ public class PushAgent extends Spider {
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                vodAtom.put("vod_play_from", "AliYun$$$4K原画");
+                vodAtom.put("vod_play_from", "4K原画$$$AliYun");
             }
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();

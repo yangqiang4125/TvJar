@@ -17,7 +17,7 @@ public class Misc {
     public static final String DeAgent = "Dalvik/2.1.0 (Linux; U; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + " Build/" + Build.ID + ")";
     public static final String MoAgent = "Mozilla/5.0 (Linux; Android 11; Ghxi Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/76.0.3809.89 Mobile Safari/537.36 T7/12.16 SearchCraft/3.9.1 (Baidu; P1 11)";
     public static String jsonUrl = "http://test.xinjun58.com/sp/d.json";
-    public static String refreshToken="http://catvod.fun:8001/tv/ali.txt";
+    public static String refreshToken="";
     public static JSONObject siteRule = null;
     public static Integer type=1;
     public static String btype="N";
