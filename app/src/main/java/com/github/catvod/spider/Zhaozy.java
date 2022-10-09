@@ -17,31 +17,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Zhaozy extends Spider {
-    private PushAgent pushAgent;
+public class Zhaozy extends PushAgent {
     private static String b = "https://zhaoziyuan.me/";
-    @Override
-    public void init(Context context, String str) {
-        super.init(context, str);
-        pushAgent = new PushAgent();
-        pushAgent.init(context, str);
-    }
-    @Override
-    public String detailContent(List<String> list) {
-        try {
-            return pushAgent.detailContent(list);
-        } catch (Exception e) {
-            SpiderDebug.log(e);
-        }
-        return "";
-    }
-    @Override
-    public String playerContent(String str, String str2, List<String> list) {
-        return pushAgent.playerContent(str, str2, list);
-    }
-
     private Pattern regexVid = Pattern.compile("(\\S+)");
 
+    protected static HashMap<String, String> sHeaders() {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.62 Safari/537.36");
+        headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+        headers.put("Accept-encoding", "gzip, deflate, br");
+        headers.put("Accept-language", "zh-SG,zh;q=0.9,en-GB;q=0.8,en;q=0.7,zh-CN;q=0.6");
+        return headers;
+    }
     @Override
     public String searchContent(String key, boolean quick) {
         try {
