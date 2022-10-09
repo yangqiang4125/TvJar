@@ -280,7 +280,7 @@ public class PushAgent extends Spider {
                 if (vod.contains("x-oss-expires")) {
                     j++;
                     video.put("" + j, site + vod);
-                    vod = Proxy.localProxyUrl() + "?do=push&type=media&share_id=" + shareId + "&file_id=" + fileId + "&media_id=" + j;
+                    vod = Proxy.localProxyUrl() + "?do=ali&type=media&share_id=" + shareId + "&file_id=" + fileId + "&media_id=" + j;
                 }
                 lists.add(vod);
             }
@@ -313,8 +313,7 @@ public class PushAgent extends Spider {
                 jSONObject3.put("expire_sec", 600);
                 jSONObject3.put("file_id", fileId);
                 jSONObject3.put("share_id", shareId);
-            }
-            if (category.equals("audio")) {
+            }else if (category.equals("audio")) {
                 jSONObject3.put("share_id", shareId);
                 jSONObject3.put("get_audio_play_info", true);
                 jSONObject3.put("file_id", fileId);
@@ -433,7 +432,7 @@ public class PushAgent extends Spider {
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                vodAtom.put("vod_play_from", "4K原画$$$AliYun");
+                vodAtom.put("vod_play_from", "AliYun$$$4K原画");
             }
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();
@@ -456,7 +455,7 @@ public class PushAgent extends Spider {
             String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
             if (idInfo.length > 0)  url = idInfo[0].trim();
-            url = Upyunso.getRealUrl(url);
+            url = Misc.getRealUrl(url);
             String pic = null;
             if (idInfo.length>1&&!idInfo[1].equals("")) {
                 pic = idInfo[1].trim();
@@ -821,7 +820,7 @@ public class PushAgent extends Spider {
                     String[] split = id.split("\\+");
                     String str3 = split[0];
                     String str5 = split[2];
-                    String url = Proxy.localProxyUrl() + "?do=push&type=m3u8&share_id=" + str3 + "&file_id=" + str5;
+                    String url = Proxy.localProxyUrl() + "?do=ali&type=m3u8&share_id=" + str3 + "&file_id=" + str5;
                     result.put("parse", "0");
                     result.put("playUrl", "");
                     result.put("url", url);
