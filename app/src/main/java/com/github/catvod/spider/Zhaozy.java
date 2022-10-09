@@ -61,7 +61,6 @@ public class Zhaozy extends Spider {
                         JSONObject v = new JSONObject();
                         String id = b + matcher.group(1);
                         String remark = doc.select("div.news_text a p").text();
-                        //类别：文件夹 | 收录时间：2022-10-08 22:51
                         remark = remark.replaceAll(".*收录时间：(.*)", "$1");
                         v.put("vod_id", id + "$$$" + pic + "$$$" + title);
                         v.put("vod_name", title);
