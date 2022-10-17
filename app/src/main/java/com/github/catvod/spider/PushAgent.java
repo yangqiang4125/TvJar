@@ -737,7 +737,7 @@ public class PushAgent extends Spider {
                 JSONObject result = new JSONObject();
                 vodAtom.put("vod_id", url);
                 vodAtom.put("vod_name", VodName);
-                vodAtom.put("type_name", "嗅探");
+                vodAtom.put("type_name", "网页");
                 setVideoDesc(vodAtom, content);
                 lists.put(vodAtom);
                 result.put("list", lists);
