@@ -432,7 +432,7 @@ public class PushAgent extends Spider {
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                vodAtom.put("vod_play_from", "AliYun$$$4K原画");
+                vodAtom.put("vod_play_from", "4K原画$$$AliYun");
             }
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();
