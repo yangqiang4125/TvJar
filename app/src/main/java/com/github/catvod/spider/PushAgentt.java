@@ -63,6 +63,17 @@ public class PushAgentt extends Spider {
             refreshToken = extend;
         }
     }
+
+//    @Override
+//    public void init(Context context) {
+//        super.init(context);
+////        refreshToken = OkHttpUtil.string("https://gitea.com/qiaoji/jar/raw/branch/main/token.txt", null);
+////        if(refreshToken.length()!=32){
+////            refreshToken = "ad3c78559a494bde814f1a6c8c40db51";
+////        }
+//        refreshToken = "ad3c78559a494bde814f1a6c8c40db51";
+//    }
+
     private static HashMap<String, String> getHeaders() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36");
@@ -535,7 +546,7 @@ public class PushAgentt extends Spider {
                     playLists.add(TextUtils.join("#", vodItems));
                     playLists.add(TextUtils.join("#", vodItems));
                     vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                    vodAtom.put("vod_play_from", "AliYun$$$4K原画");
+                    vodAtom.put("vod_play_from", "AliYun$$$AliYun原画");
                 }
                 JSONObject result = new JSONObject();
                 JSONArray list = new JSONArray();
