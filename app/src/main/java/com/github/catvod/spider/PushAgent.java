@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 public class PushAgent extends Spider {
     private static long timeToken = 0;
     private static String accessToken = "";
+    private static String 4k = "4K原画$$$AliYun";
     private static Map<String, String> shareToken = new HashMap<>();
     private static Map<String, Long> shareExpires = new HashMap<>();
     private static final Map<String, Map<String, String>> videosMap = new HashMap<>();
@@ -40,6 +41,7 @@ public class PushAgent extends Spider {
     private static final String SiteUrl = "https://api.aliyundrive.com";
     public static Pattern regexAli = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     public static Pattern regexAliFolder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
+
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
@@ -78,6 +80,7 @@ public class PushAgent extends Spider {
                     Misc.type = Misc.siteRule.optInt("ua", 1);
                     Misc.btype = Misc.siteRule.optString("btype", "N");
                     Misc.apikey = Misc.siteRule.optString("apikey", "0ac44ae016490db2204ce0a042db2916");
+                    4k = Misc.siteRule.optString("4k", "4K原画$$$AliYun");
                 }
                 return jo;
             }
@@ -432,7 +435,7 @@ public class PushAgent extends Spider {
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                vodAtom.put("vod_play_from", "4K原画$$$AliYun");
+                vodAtom.put("vod_play_from", 4k);
             }
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();
