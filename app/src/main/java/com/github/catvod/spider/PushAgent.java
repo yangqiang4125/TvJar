@@ -394,13 +394,19 @@ public class PushAgent extends Spider {
         return c;
     }
 
-    public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type){
+    public static String getBstr(String ss,boolean f){
+        String s = ss.replace("4K", "").replace("mp4", "");
+        if(!f) s = s.replaceFirst("1080", "");
+        return s;
+    }
+
+    public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type,boolean f){
         String iname="";
         String regx = ".*E(\\d+)\\..*";
         Matcher ma = null;
         boolean flag = false;
         String ss = list.get(0);
-        String s0 = ss.replace("4K", "").replaceFirst("1080", "").replace("mp4", "");
+        String s0 = getBstr(ss, f);
         if(!s0.equals(ss)) flag = true;
         int c = cs(s0,"\\d+");
         Map<String, String> m = new HashMap<>();
@@ -409,7 +415,7 @@ public class PushAgent extends Spider {
                 if (Misc.matcher(regx, name).find()) {
                     iname = name.replaceAll(regx, "$1");
                 }else if (c==1) {
-                    if(flag) name = name.replace("4K", "").replaceFirst("1080", "").replace("mp4", "");
+                    if(flag) name = getBstr(name,f);
                     ma = Misc.matcher("\\d+", name);
                     while (ma.find()) {
                         iname = ma.group();
@@ -472,19 +478,19 @@ public class PushAgent extends Spider {
             ArrayList<String> arrayList2 = new ArrayList<>(hashMap.keySet());
             Collections.sort(arrayList2);
             String s = TextUtils.join("#", arrayList2);
-            String type = "";
+            String type = "";boolean f = false;
             if (s.contains("4K")) {
                 type = "4K";
             }else if (s.contains("4k")) {
                 type = "4k";
             }else if (s.contains("1080")) {
-                int c = cs(s,"1080");
-                if(c ==arrayList2.size()*2) type = "1080";
+                if(!s.contains("1079"))type = "1080";
+                else f = true;
             }
             String from = "AliYun%$$$4K原画";
             from = from.replaceAll("%", type);
             if (!k4.equals("0")) {
-                hashMap = getBx(arrayList2, hashMap, type);
+                hashMap = getBx(arrayList2, hashMap, type,f);
                 arrayList2 = new ArrayList<>(hashMap.keySet());
                 Collections.sort(arrayList2);
             }
