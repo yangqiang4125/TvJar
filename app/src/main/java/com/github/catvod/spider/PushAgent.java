@@ -32,8 +32,9 @@ import java.util.regex.Pattern;
 
 public class PushAgent extends Spider {
     private static long timeToken = 0;
+    private static int zi=0;
     private static String accessToken = "";
-    private static String k4 = "4K原画$$$AliYun";
+    private static String k4 = "1";
     private static Map<String, String> shareToken = new HashMap<>();
     private static Map<String, Long> shareExpires = new HashMap<>();
     private static final Map<String, Map<String, String>> videosMap = new HashMap<>();
@@ -80,7 +81,7 @@ public class PushAgent extends Spider {
                     Misc.type = Misc.siteRule.optInt("ua", 1);
                     Misc.btype = Misc.siteRule.optString("btype", "N");
                     Misc.apikey = Misc.siteRule.optString("apikey", "0ac44ae016490db2204ce0a042db2916");
-                    k4 = Misc.siteRule.optString("4k", "4K原画$$$AliYun");
+                    k4 = Misc.siteRule.optString("4k", "1");
                 }
                 return jo;
             }
@@ -169,6 +170,7 @@ public class PushAgent extends Spider {
                 return string;
             } catch (JSONException e) {
                 SpiderDebug.log(e);
+                Init.show("來晚啦，该分享已失效。");
                 return "";
             }
         }
@@ -239,9 +241,9 @@ public class PushAgent extends Spider {
         }
         return null;
     }
-
     private static String getVideoUrl(String shareId, String shareToken, String fileId) {
         try {
+            if(zi>1) return "";
             getRefreshTk();
             JSONObject json = new JSONObject();
             json.put("share_id", shareId);
@@ -287,11 +289,12 @@ public class PushAgent extends Spider {
                 }
                 lists.add(vod);
             }
+            zi=0;
             videosMap.put(fileId, video);
             return TextUtils.join("\n", lists);
         } catch (Exception e2) {
-            SpiderDebug.log(e2);
-            return "";
+            timeToken = 0;zi++;
+            return getVideoUrl(shareId, shareToken, fileId);
         }
     }
 
@@ -323,6 +326,7 @@ public class PushAgent extends Spider {
             }
             return new JSONObject(postJson("https://api.aliyundrive.com/v2/file/get_share_link_download_url", jSONObject3.toString(), json)).getString("download_url");
         } catch (Exception e) {
+            timeToken = 0;
             SpiderDebug.log(e);
             return "";
         }
@@ -380,6 +384,41 @@ public class PushAgent extends Spider {
         }
     }
 
+    public static int cs(String msg1,String regx){
+        String msg = msg1.replaceAll(regx, "⑩");
+        Matcher ma = Misc.matcher("⑩", msg);//指定字符串出现的次数
+        int c = 0;
+        while (ma.find()) {
+            c++;
+        }
+        return c;
+    }
+
+    public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type){
+        String iname="";
+        List<String> li = new ArrayList<>();
+        String regx = ".*E(\\d+)\\..*";
+        Matcher ma = null;
+        String s0 = list.get(0);
+        int c = cs(s0,"\\d+");
+        Map<String, String> m = new HashMap<>();
+        for (String name : list) {
+            if (type.isEmpty()||name.contains(type)) {
+                if (Misc.matcher(regx, name).find()) {
+                    iname = name.replaceAll(regx, "$1");
+                }else if (c==1) {
+                    ma = Misc.matcher("\\d+", name);
+                    while (ma.find()) {
+                        iname = ma.group();
+                    }
+                }
+                li.add(iname);
+                m.put(iname, map.get(name));
+            }
+        }
+        return m;
+    }
+
 
     public static String getAliContent(String url,JSONObject vodAtom) {
         try {
@@ -427,6 +466,22 @@ public class PushAgent extends Spider {
             listFiles(hashMap, shareId, shareTk, fileId, url, _name);
             ArrayList<String> arrayList2 = new ArrayList<>(hashMap.keySet());
             Collections.sort(arrayList2);
+            String s = TextUtils.join("#", arrayList2);
+            String type = "";
+            if (s.contains("4K")) {
+                type = "4K";
+            }else if (s.contains("4k")) {
+                type = "4k";
+            }else if (s.contains("1080")) {
+                type = "1080";
+            }
+            String from = "AliYun%$$$4K原画";
+            from = from.replaceAll("%", type);
+            if (!k4.equals("0")) {
+                hashMap = getBx(arrayList2, hashMap, type);
+                arrayList2 = new ArrayList<>(hashMap.keySet());
+                Collections.sort(arrayList2);
+            }
             for (String item : arrayList2) {
                 vodItems.add(item + "$" + hashMap.get(item));
             }
@@ -435,7 +490,7 @@ public class PushAgent extends Spider {
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
-                vodAtom.put("vod_play_from", k4);
+                vodAtom.put("vod_play_from", from);
             }
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();
