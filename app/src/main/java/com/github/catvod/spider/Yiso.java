@@ -55,7 +55,7 @@ public class Yiso extends Spider {
             String content = OkHttpUtil.string(url, LT);
             JSONObject data = new JSONObject(content);
             JSONArray list = data.getJSONObject("data").getJSONArray("list");
-            String cover = "https://f.haocew.com/image/tv/yiso.jpg";
+            String cover = "http://f.haocew.com/image/tv/yiso.jpg";
             JSONObject result = new JSONObject();
             JSONArray videos = new JSONArray();
             for (int i = 0; i < list.length(); i++) {
