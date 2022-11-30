@@ -396,10 +396,12 @@ public class PushAgent extends Spider {
 
     public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type){
         String iname="";
-        List<String> li = new ArrayList<>();
         String regx = ".*E(\\d+)\\..*";
         Matcher ma = null;
-        String s0 = list.get(0);
+        boolean flag = false;
+        String ss = list.get(0);
+        String s0 = ss.replace("4K", "").replaceFirst("1080", "").replace("mp4", "");
+        if(!s0.equals(ss)) flag = true;
         int c = cs(s0,"\\d+");
         Map<String, String> m = new HashMap<>();
         for (String name : list) {
@@ -407,12 +409,15 @@ public class PushAgent extends Spider {
                 if (Misc.matcher(regx, name).find()) {
                     iname = name.replaceAll(regx, "$1");
                 }else if (c==1) {
+                    if(flag) name = name.replace("4K", "").replaceFirst("1080", "").replace("mp4", "");
                     ma = Misc.matcher("\\d+", name);
                     while (ma.find()) {
                         iname = ma.group();
                     }
+                }else {
+                    iname = name;
                 }
-                li.add(iname);
+                if(iname.contains(".")&&iname.length()>5) iname = iname.substring(0, iname.lastIndexOf("."));
                 m.put(iname, map.get(name));
             }
         }
@@ -473,7 +478,8 @@ public class PushAgent extends Spider {
             }else if (s.contains("4k")) {
                 type = "4k";
             }else if (s.contains("1080")) {
-                type = "1080";
+                int c = cs(s,"1080");
+                if(c ==arrayList2.size()*2) type = "1080";
             }
             String from = "AliYun%$$$4K原画";
             from = from.replaceAll("%", type);
@@ -874,29 +880,9 @@ public class PushAgent extends Spider {
                     result.put("header", Misc.jHeaders(Misc.type,id).toString());
                     return result.toString();
                 }
-                case "AliYun":
-                    String[] split = id.split("\\+");
-                    String str3 = split[0];
-                    String str5 = split[2];
-                    String url = Proxy.localProxyUrl() + "?do=ali&type=m3u8&share_id=" + str3 + "&file_id=" + str5;
-                    result.put("parse", "0");
-                    result.put("playUrl", "");
-                    result.put("url", url);
-                    result.put("header", "");
-                    if (Misc.rflag && Misc.btype.equals("Y")) {
-                        String uri = split[4];
-                        if (split.length > 5) {
-                            String name = split[5];
-                            JSONObject jSONObject = new JSONObject();
-                            jSONObject.put("url", uri);
-                            jSONObject.put("name", name);
-                            postJson("http://qyh.haocew.com/qy/demand/msg", jSONObject.toString(), null);
-                        }
-                    }
-                    return result.toString();
                 case "4K原画": {
-                    split = id.split("\\+");
-                    url = getOriginalVideoUrl(split[0], split[1], split[2], split[3]);
+                    String[] split = id.split("\\+");
+                    String url = getOriginalVideoUrl(split[0], split[1], split[2], split[3]);
                     Map<String, List<String>> headerMap = new HashMap<>();
                     OkHttpUtil.stringNoRedirect(url, getHeaders(), headerMap);
                     String videoUrl = OkHttpUtil.getRedirectLocation(headerMap);
@@ -907,6 +893,27 @@ public class PushAgent extends Spider {
                     result.put("header", new JSONObject(getHeaders()).toString());
                     return result.toString();
                 }
+            }
+            if(flag.startsWith( "AliYun")){
+                String[] split = id.split("\\+");
+                String str3 = split[0];
+                String str5 = split[2];
+                String url = Proxy.localProxyUrl() + "?do=ali&type=m3u8&share_id=" + str3 + "&file_id=" + str5;
+                result.put("parse", "0");
+                result.put("playUrl", "");
+                result.put("url", url);
+                result.put("header", "");
+                if (Misc.rflag && Misc.btype.equals("Y")) {
+                    String uri = split[4];
+                    if (split.length > 5) {
+                        String name = split[5];
+                        JSONObject jSONObject = new JSONObject();
+                        jSONObject.put("url", uri);
+                        jSONObject.put("name", name);
+                        postJson("http://qyh.haocew.com/qy/demand/msg", jSONObject.toString(), null);
+                    }
+                }
+                return result.toString();
             }
             if(flag.startsWith("嗅探")||flag.startsWith("播放")){
                 result.put("header", Misc.jHeaders(Misc.type,id).toString());
