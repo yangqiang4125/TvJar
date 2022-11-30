@@ -401,7 +401,7 @@ public class PushAgent extends Spider {
     }
 
     public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type,boolean f){
-        String iname="";
+        String iname="",rname="";
         String regx = ".*E(\\d+)\\..*";
         Matcher ma = null;
         boolean flag = false;
@@ -415,8 +415,8 @@ public class PushAgent extends Spider {
                 if (Misc.matcher(regx, name).find()) {
                     iname = name.replaceAll(regx, "$1");
                 }else if (c==1) {
-                    if(flag) name = getBstr(name,f);
-                    ma = Misc.matcher("\\d+", name);
+                    if(flag) rname = getBstr(name,f);
+                    ma = Misc.matcher("\\d+", rname);
                     while (ma.find()) {
                         iname = ma.group();
                     }
