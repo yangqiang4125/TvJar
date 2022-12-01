@@ -422,6 +422,8 @@ public class PushAgent extends Spider {
                     while (ma.find()) {
                         iname = ma.group();
                     }
+                }else if(Misc.matcher("(\\d+).*", name).find()){
+                    iname = name.replaceAll("(\\d+).*", "$1");
                 }else {
                     iname = name;
                 }
