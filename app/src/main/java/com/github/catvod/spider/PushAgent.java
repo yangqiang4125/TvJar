@@ -469,6 +469,7 @@ public class PushAgent extends Spider {
             }
             vodAtom.put("type_name", "阿里云盘");
             ArrayList<String> vodItems = new ArrayList<>();
+            ArrayList<String> vodItems3 = new ArrayList<>();
             if (!fileInfo.getString("type").equals("folder")) {
                 if (!fileInfo.getString("type").equals("file") || !fileInfo.getString("category").equals("video")) {
                     return "";
@@ -476,10 +477,14 @@ public class PushAgent extends Spider {
                 fileId = "root";
             }
             String shareTk = getShareTk(shareId, "");
+            Map<String, String> omap = new HashMap<>();
+            listFiles(omap, shareId, shareTk, fileId, url, _name);
             Map<String, String> hashMap = new HashMap<>();
-            listFiles(hashMap, shareId, shareTk, fileId, url, _name);
+            hashMap.putAll(omap);
+            Map<String, String> nmap = new HashMap<>();
             ArrayList<String> arrayList2 = new ArrayList<>(hashMap.keySet());
-            Collections.sort(arrayList2);
+            ArrayList<String> arrayList3 = new ArrayList<>();
+            arrayList3.addAll(arrayList2);
             String s = TextUtils.join("#", arrayList2);
             String type = "";boolean f = false;
             if (s.contains("4K")) {
@@ -490,13 +495,20 @@ public class PushAgent extends Spider {
                 if(!s.contains("1079"))type = "1080";
                 else f = true;
             }
-            String from = "AliYun%$$$4K原画";
-            from = from.replaceAll("%", type);
+            String xfrom = "";
+            String from = "AliYun%$$$4K原画&";
+
             if (!k4.equals("0")) {
-                hashMap = getBx(arrayList2, hashMap, type,f);
-                arrayList2 = new ArrayList<>(hashMap.keySet());
-                Collections.sort(arrayList2);
+                nmap = getBx(arrayList2, hashMap, type,f);
+                arrayList2 = new ArrayList<>(nmap.keySet());
+                if (nmap.size() != 0 && nmap.size() != hashMap.size()) {
+                    xfrom = "$$$AliYun原视频序";
+                    arrayList3 = new ArrayList<>(omap.keySet());
+                }
             }
+            from = from.replaceAll("%", type).replaceAll("&",xfrom);
+            from = from+"$$$AliYun原视频";
+            Collections.sort(arrayList2);
             for (String item : arrayList2) {
                 vodItems.add(item + "$" + hashMap.get(item));
             }
@@ -504,6 +516,22 @@ public class PushAgent extends Spider {
                 ArrayList<String> playLists = new ArrayList<>();
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
+
+                if(xfrom.isEmpty()){
+                    Collections.sort(arrayList3);
+                    for (String item : arrayList3) {
+                        vodItems3.add(item + "$" + omap.get(item));
+                    }
+                    playLists.add(TextUtils.join("#", vodItems3));
+                }
+                ArrayList<String> arrayList4 = new ArrayList<>();
+                arrayList4.addAll(arrayList3);
+                ArrayList<String> vodItems4 = new ArrayList<>();
+                for (String item : arrayList4) {
+                    vodItems4.add(item + "$" + omap.get(item));
+                }
+                playLists.add(TextUtils.join("#", vodItems4));
+
                 vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
                 vodAtom.put("vod_play_from", from);
             }
