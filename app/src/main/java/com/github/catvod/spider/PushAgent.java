@@ -479,9 +479,9 @@ public class PushAgent extends Spider {
                 fileId = "root";
             }
             String shareTk = getShareTk(shareId, "");
-            Map<String, String> omap = new HashMap<>();
+            Map<String, String> omap = new LinkedHashMap<>();
             listFiles(omap, shareId, shareTk, fileId, url, _name);
-            Map<String, String> hashMap = new HashMap<>();
+            Map<String, String> hashMap = new LinkedHashMap<>();
             hashMap.putAll(omap);
             Map<String, String> nmap = new HashMap<>();
             ArrayList<String> arrayList2 = new ArrayList<>(hashMap.keySet());
@@ -507,27 +507,29 @@ public class PushAgent extends Spider {
                     xfrom = "$$$AliYun原视频序";
                     arrayList3 = new ArrayList<>(omap.keySet());
                 }
-            }
+            }else nmap = hashMap;
+
             from = from.replaceAll("%", type).replaceAll("&",xfrom);
             from = from+"$$$AliYun原视频";
             Collections.sort(arrayList2);
             for (String item : arrayList2) {
-                vodItems.add(item + "$" + hashMap.get(item));
+                vodItems.add(item + "$" + nmap.get(item));
             }
             if(vodItems.size()>0){
                 ArrayList<String> playLists = new ArrayList<>();
                 playLists.add(TextUtils.join("#", vodItems));
                 playLists.add(TextUtils.join("#", vodItems));
 
-                if(xfrom.isEmpty()){
+                ArrayList<String> arrayList4 = new ArrayList<>();
+                arrayList4.addAll(arrayList3);
+                if(!xfrom.isEmpty()){
                     Collections.sort(arrayList3);
                     for (String item : arrayList3) {
                         vodItems3.add(item + "$" + omap.get(item));
                     }
                     playLists.add(TextUtils.join("#", vodItems3));
                 }
-                ArrayList<String> arrayList4 = new ArrayList<>();
-                arrayList4.addAll(arrayList3);
+
                 ArrayList<String> vodItems4 = new ArrayList<>();
                 for (String item : arrayList4) {
                     vodItems4.add(item + "$" + omap.get(item));
