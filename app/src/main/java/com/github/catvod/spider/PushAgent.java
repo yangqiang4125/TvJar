@@ -509,7 +509,7 @@ public class PushAgent extends Spider {
                 }
             }else nmap = hashMap;
 
-            from = from.replaceAll("%", type).replaceAll("&",xfrom);
+            from = from.replace("%", type).replace("&",xfrom);
             from = from+"$$$AliYun原视频";
             Collections.sort(arrayList2);
             for (String item : arrayList2) {
