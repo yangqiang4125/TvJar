@@ -6,12 +6,7 @@ import android.util.TimeUtils;
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +20,7 @@ public class Gitcafe extends Spider {
     private PushAgent pushAgent;
     private JSONObject d;
     private JSONObject Home;
+    private static String vodPic = "http://f.haocew.com/image/tv/xzt.jpg";
 
 
     @Override
@@ -37,36 +33,7 @@ public class Gitcafe extends Spider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        ArrayList arrayList = new ArrayList();
-        this.b = arrayList;
-        arrayList.add("hydm");
-        List<String> list = this.b;
-        list.add("hyds");
-        List<String> list2 = this.b;
-        list2.add("hydy");
-        List<String> list3 = this.b;
-        list3.add("omdm");
-        List<String> list4 = this.b;
-        list4.add("omds");
-        List<String> list5 = this.b;
-        list5.add("omdy");
-        List<String> list6 = this.b;
-        list6.add("rhdm");
-        List<String> list7 = this.b;
-        list7.add("rhds");
-        List<String> list8 = this.b;
-        list8.add("rhdy");
-        List<String> list9 = this.b;
-        list9.add("qtds");
-        List<String> list10 = this.b;
-        list10.add("qtdy");
-        List<String> list11 = this.b;
-        list11.add("qtsp");
-        List<String> list12 = this.b;
-        list12.add("jlp");
-        List<String> list13 = this.b;
-        list13.add("zyp");
+        this.b = Arrays.asList("hyds","rhds","zyp","hydy","omds","qtsp","rhdm","hydm","omdm","omdy","rhdy","qtdy","hyyy","rhyy","omyy","jlp","jypx","zspx","fj");
     }
 
     protected HashMap<String, String> LT() {
@@ -91,7 +58,7 @@ public class Gitcafe extends Spider {
                         jSONObject2.put("vod_id", sb2);
                         String string2 = jSONObject.getString("title");
                         jSONObject2.put("vod_name", string2);
-                        jSONObject2.put("vod_pic", "http://f.haocew.com/image/tv/xzt.jpg");
+                        jSONObject2.put("vod_pic", vodPic);
                         jSONArray.put(jSONObject2);
                     }
                 }
@@ -133,7 +100,7 @@ public class Gitcafe extends Spider {
                     String group = matcher.group(1);
                     if (allData.containsKey(group)) {
                         JSONObject jSONObject3 = (JSONObject) allData.get(group);
-                        jSONObject2.put("vod_pic", "http://f.haocew.com/image/tv/xzt.jpg");
+                        jSONObject2.put("vod_pic", vodPic);
 
                     }
                 }
@@ -192,8 +159,6 @@ public class Gitcafe extends Spider {
 
     @Override
     public String homeContent(boolean z) {
-        String str = "https://www.lgstatic.com/i/image2/M01/15/7E/CgoB5lysLXCADg6ZAABapAHUnQM321.jpg";
-
         try {
             JSONObject homeData = getHomeData(this);
             JSONObject jSONObject = homeData.getJSONObject("info");
@@ -232,7 +197,7 @@ public class Gitcafe extends Spider {
                         jSONObject6.put("vod_id", sb2);
                         String string5 = jSONObject4.getString("title");
                         jSONObject6.put("vod_name", string5);
-                        jSONObject6.put("vod_pic", str);
+                        jSONObject6.put("vod_pic", vodPic);
                         String string6 = jSONObject4.getString("date");
                         jSONObject6.put("vod_remarks", string6);
                         jSONArray3.put(jSONObject6);
@@ -247,7 +212,7 @@ public class Gitcafe extends Spider {
                     jSONObject62.put("vod_id", sb22);
                     String string52 = jSONObject4.getString("title");
                     jSONObject62.put("vod_name", string52);
-                    jSONObject62.put("vod_pic", str);
+                    jSONObject62.put("vod_pic", vodPic);
                     String string62 = jSONObject4.getString("date");
                     jSONObject62.put("vod_remarks", string62);
                     jSONArray3.put(jSONObject62);

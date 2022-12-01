@@ -35,6 +35,7 @@ public class PushAgent extends Spider {
     private static int zi=0;
     private static String accessToken = "";
     private static String k4 = "1";
+    private static String szRegx = "";//集数数字正则匹配
     private static Map<String, String> shareToken = new HashMap<>();
     private static Map<String, Long> shareExpires = new HashMap<>();
     private static final Map<String, Map<String, String>> videosMap = new HashMap<>();
@@ -42,7 +43,6 @@ public class PushAgent extends Spider {
     private static final String SiteUrl = "https://api.aliyundrive.com";
     public static Pattern regexAli = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
     public static Pattern regexAliFolder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
-
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
@@ -82,6 +82,7 @@ public class PushAgent extends Spider {
                     Misc.btype = Misc.siteRule.optString("btype", "N");
                     Misc.apikey = Misc.siteRule.optString("apikey", "0ac44ae016490db2204ce0a042db2916");
                     k4 = Misc.siteRule.optString("4k", "1");
+                    szRegx =  Misc.siteRule.optString("szRegx", ".*[Ep|EP|E|第](\\d+)[\\.|集].*");
                 }
                 return jo;
             }
@@ -402,7 +403,7 @@ public class PushAgent extends Spider {
 
     public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type,boolean f){
         String iname="",rname="";
-        String regx = ".*E(\\d+)\\..*";
+        String regx = szRegx;
         Matcher ma = null;
         boolean flag = false;
         String ss = list.get(0);
@@ -416,6 +417,7 @@ public class PushAgent extends Spider {
                     iname = name.replaceAll(regx, "$1");
                 }else if (c==1) {
                     if(flag) rname = getBstr(name,f);
+                    else rname = name;
                     ma = Misc.matcher("\\d+", rname);
                     while (ma.find()) {
                         iname = ma.group();
@@ -424,6 +426,7 @@ public class PushAgent extends Spider {
                     iname = name;
                 }
                 if(iname.contains(".")&&iname.length()>5) iname = iname.substring(0, iname.lastIndexOf("."));
+                if(Misc.isNumeric(iname)&&iname.length()==1)iname="0"+iname;
                 m.put(iname, map.get(name));
             }
         }
