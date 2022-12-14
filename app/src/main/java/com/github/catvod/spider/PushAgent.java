@@ -82,7 +82,7 @@ public class PushAgent extends Spider {
                     Misc.btype = Misc.siteRule.optString("btype", "N");
                     Misc.apikey = Misc.siteRule.optString("apikey", "0ac44ae016490db2204ce0a042db2916");
                     k4 = Misc.siteRule.optString("4k", "1");
-                    szRegx =  Misc.siteRule.optString("szRegx", ".*[Ep|EP|E|第](\\d+)[\\.|集]?.*");
+                    szRegx =  Misc.siteRule.optString("szRegx", ".*(Ep|EP|E|第)(\\d+)[\\.|集]?.*");
                 }
                 return jo;
             }
@@ -416,7 +416,7 @@ public class PushAgent extends Spider {
                 zname = name;
                 name = name.replace("mp4", "");
                 if (Misc.matcher(regx, name).find()) {
-                    iname = name.replaceAll(regx, "$1");
+                    iname = name.replaceAll(regx, "$2");
                 }else if (c==1) {
                     if(flag) rname = getBstr(name,f);
                     else rname = name;
