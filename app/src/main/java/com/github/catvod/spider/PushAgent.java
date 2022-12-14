@@ -34,7 +34,7 @@ public class PushAgent extends Spider {
     private static long timeToken = 0;
     private static int zi=0;
     private static String accessToken = "";
-    private static String k4 = "1";
+    private static String k4 = "1";//是否开启简写集数
     private static String szRegx = "";//集数数字正则匹配
     private static Map<String, String> shareToken = new HashMap<>();
     private static Map<String, Long> shareExpires = new HashMap<>();
@@ -396,13 +396,13 @@ public class PushAgent extends Spider {
     }
 
     public static String getBstr(String ss,boolean f){
-        String s = ss.replace("4K", "").replace("mp4", "");
+        String s = ss.replace("4K", "");
         if(!f) s = s.replaceFirst("1080", "");
         return s;
     }
 
     public static  Map<String, String> getBx(List<String> list,Map<String, String> map,String type,boolean f){
-        String iname="",rname="";
+        String iname="",rname="",zname="";
         String regx = szRegx;
         Matcher ma = null;
         boolean flag = false;
@@ -413,6 +413,7 @@ public class PushAgent extends Spider {
         Map<String, String> m = new HashMap<>();
         for (String name : list) {
             if (type.isEmpty()||name.contains(type)) {
+                zname = name;
                 name = name.replace("mp4", "");
                 if (Misc.matcher(regx, name).find()) {
                     iname = name.replaceAll(regx, "$1");
@@ -432,7 +433,7 @@ public class PushAgent extends Spider {
                 }
                 if(iname.contains(".")&&iname.length()>5) iname = iname.substring(0, iname.lastIndexOf("."));
                 if(Misc.isNumeric(iname)&&iname.length()==1)iname="0"+iname;
-                m.put(iname, map.get(name));
+                m.put(iname, map.get(zname));
             }
         }
         return m;
@@ -506,10 +507,7 @@ public class PushAgent extends Spider {
             if (!k4.equals("0")) {
                 nmap = getBx(arrayList2, hashMap, type,f);
                 arrayList2 = new ArrayList<>(nmap.keySet());
-                if (nmap.size() != 0 && nmap.size() != hashMap.size()) {
-                    xfrom = "$$$AliYun原视频序";
-                    arrayList3 = new ArrayList<>(omap.keySet());
-                }
+                xfrom = "$$$AliYun原视频序";
             }else nmap = hashMap;
 
             from = from.replace("%", type).replace("&",xfrom);
