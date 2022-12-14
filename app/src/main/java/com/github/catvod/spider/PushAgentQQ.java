@@ -134,8 +134,7 @@ public class PushAgentQQ extends PushAgent {
     @Override
     public String homeContent(boolean filter) {
         try {
-            fetchRule(true,1);
-            JSONObject result = new JSONObject();
+            JSONObject jo = fetchRule(true,1);
             JSONArray classes = new JSONArray();
             String[] fenleis = getRuleVal(Misc.siteRule,"fenlei", "").split("#");
             for (String fenlei : fenleis) {
@@ -145,6 +144,7 @@ public class PushAgentQQ extends PushAgent {
                 jsonObject.put("type_id", info[1]);
                 classes.put(jsonObject);
             }
+            JSONObject result = category("t1", "1", true, null,jo);
             result.put("class", classes);
             return result.toString();
         } catch (
@@ -155,31 +155,7 @@ public class PushAgentQQ extends PushAgent {
     }
     @Override
     public String homeVideoContent() {
-        try {
-            JSONObject jo = fetchRule(true,1);
-            JSONArray videos = new JSONArray();
-            String[] fenleis = getRuleVal(jo, "fenlei", "").split("#");
-            for (String fenlei : fenleis) {
-                String[] info = fenlei.split("\\$");
-                JSONObject data = category(info[1], "1", false, new HashMap<>(),jo);
-                if (data != null) {
-                    JSONArray vids = data.optJSONArray("list");
-                    if (vids != null) {
-                        for (int i = 0; i < vids.length() && i < 5; i++) {
-                            videos.put(vids.getJSONObject(i));
-                        }
-                    }
-                }
-                if (videos.length() >= 30)
-                    break;
-            }
-            JSONObject result = new JSONObject();
-            result.put("list", videos);
-            return result.toString();
-        } catch (Exception e) {
-            SpiderDebug.log(e);
-        }
-        return "";
+        return homeContent(true);
     }
 
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend,JSONObject jo) {
