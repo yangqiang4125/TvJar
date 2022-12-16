@@ -39,14 +39,14 @@ public class Upyunso extends PushAgent {
         try {
             JSONArray jSONArray = new JSONArray();
             key = URLEncoder.encode(key);
-            JSONArray arr = Base64Utils.getJSONByUrl("https://api1.upyunso.com/search?keyword=" + key+"&page=1");
+            JSONArray arr = Base64Utils.getJSONByUrl("https://api.upyunso1.com/search?keyword=" + key+"&page=1");
             if (arr.length() > 0) {
 
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject v = arr.getJSONObject(i);
                     String id = v.getString("url");
                     String title = v.getString("title");
-                    String remark = v.getString("remark");
+                    String remark = v.optString("remark","");
                     v.put("vod_id", id + "$$$" + pic + "$$$" + title);
                     v.put("vod_name", title);
                     v.put("vod_remarks", remark);
