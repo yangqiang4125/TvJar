@@ -61,7 +61,7 @@ public class AliPS extends PushAgent {
                         }
                         v.put("vod_id", id + "$$$" + pic + "$$$" + title);
                         v.put("vod_name", title);
-                        v.put("vod_remark", remark);
+                        v.put("vod_remarks", remark);
                         v.put("vod_pic", pic);
                         jSONArray.put(v);
                     }
