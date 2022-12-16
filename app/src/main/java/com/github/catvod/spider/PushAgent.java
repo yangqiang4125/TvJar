@@ -556,17 +556,21 @@ public class PushAgent extends Spider {
         return getDetail(list);
     }
 
-    public static String getDetail(List<String> list) {
+    public static String getDetail(List<String> list){
+        return getDetail(list, null);
+    }
+    public static String getDetail(List<String> list,String pic) {
         try {
             String url = list.get(0).trim();
             String[] idInfo = url.split("\\$\\$\\$");
             if (idInfo.length > 0)  url = idInfo[0].trim();
             url = Misc.getRealUrl(url);
-            String pic = null;
-            if (idInfo.length>1&&!idInfo[1].equals("")) {
-                pic = idInfo[1].trim();
+            if(pic==null) {
+                if (idInfo.length>1&&!idInfo[1].equals("")) {
+                    pic = idInfo[1].trim();
+                }
+                if(pic==null) pic = Misc.getWebName(url, 1);
             }
-            if(pic==null) pic = Misc.getWebName(url, 1);
             String VodName = null,director = "",actor = "",desc = "";
             if (idInfo.length > 1) {
                 idInfo[0]=url;
@@ -945,16 +949,6 @@ public class PushAgent extends Spider {
                 result.put("playUrl", "");
                 result.put("url", url);
                 result.put("header", "");
-                if (Misc.rflag && Misc.btype.equals("Y")) {
-                    String uri = split[4];
-                    if (split.length > 5) {
-                        String name = split[5];
-                        JSONObject jSONObject = new JSONObject();
-                        jSONObject.put("url", uri);
-                        jSONObject.put("name", name);
-                        postJson("http://qyh.haocew.com/qy/demand/msg", jSONObject.toString(), null);
-                    }
-                }
                 return result.toString();
             }
             if(flag.startsWith("嗅探")||flag.startsWith("播放")){

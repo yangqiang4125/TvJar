@@ -25,7 +25,7 @@ public class Base64Utils {
                 JSONObject o = null, o2 = null;
                 JSONObject jsonObject2 = jsonObject.getJSONObject("result"),oc = null;
                 JSONArray array = jsonObject2.getJSONArray("items"), ac2 = new JSONArray();
-                int z = 11, f=0;
+                int z = 20, f=0;
                 int len = array.length() > z ? z : array.length();
                 for (int i = 1; i < len; i++) {
                     remark = "";
@@ -47,7 +47,7 @@ public class Base64Utils {
                             uri = o.optString("page_url", "");
                             o2.put("title", title);
                             o2.put("remark", remark);
-                            o2.put("url", "upyunso.com/"+uri);
+                            o2.put("url", uri);
                             a2.put(o2);
                         }
                     }
