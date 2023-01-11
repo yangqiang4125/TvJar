@@ -16,23 +16,10 @@ public class Upyunso extends PushAgent {
     private static String b = "https://www.upyunso.com/";
     private String pic = "http://image.xinjun58.com/image/tv/ups.jpg";
 
-    public static String getRealUrl(String url){
-        if (url.contains("upyunso.com/download")) {
-            url = Base64Utils.sendGet(url);
-        } else if (url.contains("alipansou")) {
-            Matcher matcher = Misc.matcher(a,OkHttpUtil.string(url, null));
-            if (!matcher.find()) {
-                return "";
-            }
-            url = matcher.group(1).replaceAll("\\\\","");
-        }
-        return url;
-    }
     @Override
     public String detailContent(List<String> list) {
         return getDetail(list, pic);
     }
-
 
     @Override
     public String searchContent(String key, boolean z) {

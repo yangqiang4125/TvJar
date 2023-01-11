@@ -396,7 +396,7 @@ public class PushAgent extends Spider {
     }
 
     public static String getBstr(String ss,boolean f){
-        String s = ss.replace("4K", "");
+        String s = ss;
         if(!f) s = s.replaceFirst("1080", "");
         return s;
     }
@@ -414,22 +414,24 @@ public class PushAgent extends Spider {
         for (String name : list) {
             if (type.isEmpty()||name.contains(type)) {
                 zname = name;
-                name = name.replace("mp4", "");
                 if (Misc.matcher(regx, name).find()) {
                     iname = name.replaceAll(regx, "$2");
-                }else if (c==1) {
-                    if(flag) rname = getBstr(name,f);
-                    else rname = name;
-                    ma = Misc.matcher("\\d+", rname);
-                    while (ma.find()) {
-                        iname = ma.group();
-                    }
-                }else if(Misc.matcher(".*(\\d+)集.*", name).find()){
-                    iname = name.replaceAll(".*(\\d+)集.*", "$1");
-                }else if(Misc.matcher("(\\d+).*", name).find()){
-                    iname = name.replaceAll("(\\d+).*", "$1");
                 }else {
-                    iname = name;
+                    name = name.replace("mp4", "").replace("4K","").replace("4k","").replace("1080P","").replace("1080p","");
+                    if (c==1) {
+                        if(flag) rname = getBstr(name,f);
+                        else rname = name;
+                        ma = Misc.matcher("\\d+", rname);
+                        while (ma.find()) {
+                            iname = ma.group();
+                        }
+                    }else if(Misc.matcher(".*(\\d+)集.*", name).find()){
+                        iname = name.replaceAll(".*(\\d+)集.*", "$1");
+                    }else if(Misc.matcher("(\\d+).*", name).find()){
+                        iname = name.replaceAll(".*?(\\d+).*", "$1");
+                    }else {
+                        iname = name;
+                    }
                 }
                 if(iname.contains(".")&&iname.length()>5) iname = iname.substring(0, iname.lastIndexOf("."));
                 if(Misc.isNumeric(iname)&&iname.length()==1)iname="0"+iname;

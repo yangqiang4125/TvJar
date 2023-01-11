@@ -11,14 +11,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 public class SSLSocketFactoryCompat extends SSLSocketFactory {
     private final SSLSocketFactory defaultFactory;
+    public static final HostnameVerifier hostnameVerifier = (hostname, session) -> true;
     // Android 5.0+ (API level21) provides reasonable default settings
     // but it still allows SSLv3
     // https://developer.android.com/about/versions/android-5.0-changes.html#ssl
@@ -77,6 +74,16 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
         }
     }
 
+    public SSLSocketFactoryCompat() {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new X509TrustManager[]{SSLSocketFactoryCompat.trustAllCert}, null);
+            defaultFactory = sslContext.getSocketFactory();
+            HttpsURLConnection.setDefaultSSLSocketFactory(defaultFactory);
+        } catch (GeneralSecurityException e) {
+            throw new AssertionError();
+        }
+    }
     public SSLSocketFactoryCompat(X509TrustManager tm) {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
