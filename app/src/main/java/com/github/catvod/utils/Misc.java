@@ -270,7 +270,17 @@ public class Misc {
         }
         return result;
     }
+    public static String substring(String text) {
+        return substring(text, 1);
+    }
 
+    public static String substring(String text, int num) {
+        if (text != null && text.length() > num) {
+            return text.substring(0, text.length() - num);
+        } else {
+            return text;
+        }
+    }
     public static String escapeExprSpecialWord(String regexStr) {
         if (!regexStr.isEmpty()) {
             String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
