@@ -16,7 +16,7 @@ public class OkHttpUtil {
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
 
-    public static final int DEFAULT_TIMEOUT = 15;
+    private static final int DEFAULT_TIMEOUT = 15;
 
     private static final Object lockO = new Object();
 
@@ -84,7 +84,7 @@ public class OkHttpUtil {
             public void onResponse(String response) {
             }
         };
-        OKRequest req = new OKRequest(METHOD_GET, url, paramsMap, headerMap, stringCallback);
+        OKReq req = new OKReq(METHOD_GET, url, paramsMap, headerMap, stringCallback);
         req.setTag(tag);
         req.execute(client);
         return stringCallback.getResult();
@@ -115,7 +115,7 @@ public class OkHttpUtil {
     }
 
     public static void get(OkHttpClient client, String url, Map<String, String> paramsMap, Map<String, String> headerMap, OKCallBack callBack) {
-        new OKRequest(METHOD_GET, url, paramsMap, headerMap, callBack).execute(client);
+        new OKReq(METHOD_GET, url, paramsMap, headerMap, callBack).execute(client);
     }
 
     public static void post(OkHttpClient client, String url, OKCallBack callBack) {
@@ -127,11 +127,11 @@ public class OkHttpUtil {
     }
 
     public static void post(OkHttpClient client, String url, Map<String, String> paramsMap, Map<String, String> headerMap, OKCallBack callBack) {
-        new OKRequest(METHOD_POST, url, paramsMap, headerMap, callBack).execute(client);
+        new OKReq(METHOD_POST, url, paramsMap, headerMap, callBack).execute(client);
     }
 
     public static void post(OkHttpClient client, String url, String tag, Map<String, String> paramsMap, Map<String, String> headerMap, OKCallBack callBack) {
-        OKRequest req = new OKRequest(METHOD_POST, url, paramsMap, headerMap, callBack);
+        OKReq req = new OKReq(METHOD_POST, url, paramsMap, headerMap, callBack);
         req.setTag(tag);
         req.execute(client);
     }
@@ -141,7 +141,7 @@ public class OkHttpUtil {
     }
 
     public static void postJson(OkHttpClient client, String url, String jsonStr, Map<String, String> headerMap, OKCallBack callBack) {
-        new OKRequest(METHOD_POST, url, jsonStr, headerMap, callBack).execute(client);
+        new OKReq(METHOD_POST, url, jsonStr, headerMap, callBack).execute(client);
     }
 
     /**
@@ -164,7 +164,7 @@ public class OkHttpUtil {
     public static void cancel(Object tag) {
         cancel(defaultClient(), tag);
     }
-    
+
     public static void cancelAll() {
         cancelAll(defaultClient());
     }

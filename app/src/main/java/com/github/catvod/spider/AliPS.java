@@ -1,5 +1,6 @@
 package com.github.catvod.spider;
 
+import com.github.catvod.utils.Misc;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,9 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,10 +18,33 @@ import java.util.regex.Pattern;
 public class AliPS extends PushAgent {
     private static String b = "https://www.alipansou.com";
 
+    private Map<String, String> getHeaders(String id) {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", Misc.UaWinChrome);
+        headers.put("Referer", b + id);
+        headers.put("_bid", "6d14a5dd6c07980d9dc089a693805ad8");
+        return headers;
+    }
+    @Override
+    public String detailContent(List<String> list) {
+        try {
+            String id =list.get(0);
+            String [] arr=id.split("\\$\\$\\$");
+            String url = arr[0].replace("/s/", "/cv/");
+            Map<String, List<String>> respHeaders = new HashMap<>();
+            OkHttpUtil.stringNoRedirect(url, getHeaders(arr[0]), respHeaders);
+            url = OkHttpUtil.getRedirectLocation(respHeaders);
+            String uid = url+"$$$" + arr[1] + "$$$" + arr[2];
+            return getDetail(Arrays.asList(uid));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     protected static HashMap<String, String> sHeaders() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.62 Safari/537.36");
-        headers.put("Referer", b);
         return headers;
     }
 
