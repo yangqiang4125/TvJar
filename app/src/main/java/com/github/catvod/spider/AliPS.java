@@ -29,13 +29,16 @@ public class AliPS extends PushAgent {
     public String detailContent(List<String> list) {
         try {
             String id =list.get(0);
-            String [] arr=id.split("\\$\\$\\$");
-            String url = arr[0].replace("/s/", "/cv/");
-            Map<String, List<String>> respHeaders = new HashMap<>();
-            OkHttpUtil.stringNoRedirect(url, getHeaders(arr[0]), respHeaders);
-            url = OkHttpUtil.getRedirectLocation(respHeaders);
-            String uid = url+"$$$" + arr[1] + "$$$" + arr[2];
-            return getDetail(Arrays.asList(uid));
+            if (!id.contains("aliyundrive.com")) {
+                String [] arr=id.split("\\$\\$\\$");
+                String url = arr[0].replace("/s/", "/cv/");
+                Map<String, List<String>> respHeaders = new HashMap<>();
+                OkHttpUtil.stringNoRedirect(url, getHeaders(arr[0]), respHeaders);
+                url = OkHttpUtil.getRedirectLocation(respHeaders);
+                String uid = url+"$$$" + arr[1] + "$$$" + arr[2];
+                return getDetail(Arrays.asList(uid));
+            }
+            return getDetail(list);
         } catch (Exception e) {
             e.printStackTrace();
             return "";

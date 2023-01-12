@@ -32,31 +32,38 @@ public class Zhaozy extends PushAgent {
     }
 
     private String getCookie() {
-        Map<String, String> params = new HashMap<>();
-        params.put("username", "412594121@qq.com");
-        params.put("password", "qq@4125");
-        Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", Misc.UaWinChrome);
-        headers.put("Referer", b + "login.html");
-        headers.put("Origin", b);
-        Map<String, List<String>> resp = new HashMap<>();
-        OkHttp.post(b + "logiu.html", params, headers, resp);
-        StringBuilder sb = new StringBuilder();
-        for (String item : resp.get("set-cookie")) sb.append(item.split(";")[0]).append(";");
-        return sb.toString();
+        if (Misc.zzy == null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("username", "412594121@qq.com");
+            params.put("password", "qq@4125");
+            Map<String, String> headers = new HashMap<>();
+            headers.put("User-Agent", Misc.UaWinChrome);
+            headers.put("Referer", b + "login.html");
+            headers.put("Origin", b);
+            Map<String, List<String>> resp = new HashMap<>();
+            OkHttp.post(b + "logiu.html", params, headers, resp);
+            StringBuilder sb = new StringBuilder();
+            for (String item : resp.get("set-cookie")) sb.append(item.split(";")[0]).append(";");
+            Misc.zzy = sb.toString();
+        }
+        return Misc.zzy;
     }
 
     @Override
     public String detailContent(List<String> list) {
         try {
             String id =list.get(0);
-            String [] arr=id.split("\\$\\$\\$");
-            Matcher matcher = Misc.regexAli.matcher(OkHttp.string(arr[0], getHeader()));
-            if (!matcher.find()) return "";
-            String uid = matcher.group(1)+"$$$" + arr[1] + "$$$" + arr[2];
-            list.set(0, uid);
+            if (!id.contains("aliyundrive.com")) {
+                String[] arr = id.split("\\$\\$\\$");
+                Matcher matcher = Misc.regexAli.matcher(OkHttp.string(arr[0], getHeader()));
+                if (!matcher.find()) return "";
+                String uid = matcher.group(1) + "$$$" + arr[1] + "$$$" + arr[2];
+                list.set(0, uid);
+                return getDetail(list);
+            }
             return getDetail(list);
         } catch (Exception e) {
+            Misc.zzy = null;
             SpiderDebug.log(e);
         }
         return "";
@@ -94,6 +101,7 @@ public class Zhaozy extends PushAgent {
             result.put("list", videos);
             return result.toString();
         } catch (Exception e) {
+            Misc.zzy = null;
             SpiderDebug.log(e);
         }
         return "";
