@@ -975,7 +975,7 @@ public class PushAgent extends Spider {
         return true;
     }
 
-   /* private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"};
+    private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"};
 
     @Override
     public boolean isVideoFormat(String url) {
@@ -989,5 +989,5 @@ public class PushAgent extends Spider {
             }
         }
         return false;
-    }*/
+    }
 }
